@@ -81,7 +81,7 @@ const UserSlice = createSlice({
     name: 'user',
     initialState: {
         status: 'idle',
-        user: [],
+        user: null,
         error: '',
         profile : []
     },

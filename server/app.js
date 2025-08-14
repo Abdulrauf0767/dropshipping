@@ -4,13 +4,20 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 require('dotenv').config();
+const http = require('http');
 const { Server } = require('socket.io');
 
-
-
 const app = express();
-const server = require('http').createServer(app);
-const io = new Server(server);
+const server = http.createServer(app);
+
+// ✅ Socket.IO with CORS config
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:5173', // React frontend URL
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
 
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
@@ -20,8 +27,7 @@ io.on('connection', (socket) => {
   });
 });
 
-
-// Middleware
+// ✅ Express Middleware
 app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:5173',
@@ -30,9 +36,9 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views')); // optional, if custom views path
+app.set('views', path.join(__dirname, 'views'));
 
-// Routes
+// ✅ Routes
 const UserRoutes = require('./routes/UserRoutes');
 const ProductRoutes = require('./routes/ProductRoutes');
 const WishlistRoutes = require('./routes/WishlistRoutes');
@@ -40,19 +46,20 @@ const CartRoutes = require('./routes/CartRoutes');
 const NotificationRoutes = require('./routes/NotificationRoutes');
 const BuyNowForMeRoutes = require('./routes/BuyNowForMeRoutes');
 const ProfileRoutes = require('./routes/ProfileRoutes');
-
+const BuyNowForSomeoneRoutes = require('./routes/BuyNowForSomeoneRoutes');
+const SellerRoutes = require('./routes/SellerRoutes');
 
 app.use('/api/user', UserRoutes);
 app.use('/api/product', ProductRoutes);
-app.use('/api/wishlist',WishlistRoutes)
-app.use('/api/cart',CartRoutes)
-app.use('/api/notification',NotificationRoutes)
+app.use('/api/wishlist', WishlistRoutes);
+app.use('/api/cart', CartRoutes);
+app.use('/api/notification', NotificationRoutes);
 app.use('/api/buynowforme', BuyNowForMeRoutes);
-app.use('/api/profile', ProfileRoutes); // Profile routes
+app.use('/api/profile', ProfileRoutes);
+app.use('/api/buynowforsomeone', BuyNowForSomeoneRoutes);
+app.use('/api/seller', SellerRoutes);
 
-
-
-// Connect to MongoDB and start the server with socket.io 
+// ✅ MongoDB Connection + Start Server
 mongoose
   .connect(process.env.DBURL)
   .then(() => {
@@ -64,5 +71,3 @@ mongoose
   .catch((err) => {
     console.error('❌ Database connection error:', err);
   });
-
-

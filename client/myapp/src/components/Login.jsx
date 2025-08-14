@@ -25,7 +25,8 @@ const Login = () => {
 
   const navigateBasedOnRole = (role) => {
     if (role === "admin") navigate("/admin");
-    else if (role === "seller") navigate("/seller");
+    else if (role === "seller") navigate("/home");
+    else if (role === "vendor") navigate("/vendor");
     else if (role === "user") navigate("/home");
     else navigate("/");
   };

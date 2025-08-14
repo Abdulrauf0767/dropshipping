@@ -29,7 +29,8 @@ const Signup = () => {
       if (res.user && res.user.role) {
         if (res.user.role === "admin") navigate("/admin");
         else if (res.user.role === "user") navigate("/home");
-        else if (res.user.role === "seller") navigate("/seller");
+        else if (res.user.role === "seller") navigate("/home");
+        else if (res.user.role === "vendor") navigate("/vendor");
         else navigate("/");
       } else {
         navigate("/");

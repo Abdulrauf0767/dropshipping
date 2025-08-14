@@ -1,64 +1,79 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './components/Login';
-import Signup from './components/Signup';
-import Home from './pages/Home';
-import Seller from './pages/Seller';
-import Admin from './pages/Admin';
-import ProtectedRoute from './components/ProtectedRoute'; // Ensure default export
-import AdminDashboard from './pages/AdminDashboard';
-import { Upload } from '@mui/icons-material';
-import ProductUpload from './pages/ProductUpload';
-import ProductDetail from './pages/ProductDetail';
-import Wishlist from './pages/Wishlist';
-import Cart from './pages/Cart';
-import SearchPage from './pages/SearchPage';
-import ChooseOrder from './components/ChooseOrder';
-import BuyNowForMe from './pages/BuyNowForMe';
-import UserNotification from './pages/UserNotification';
-import UserOrder from './pages/UserOrder';
-import UserProfile from './pages/UserProfile';
+import ProtectedRoute from './components/ProtectedRoute'; // Keep normal import for wrappers
+import BuyNowForSomeone from './pages/BuyNowForSomeone';
+import SellerInformation from './components/SellerInformation';
+
+// Lazy-loaded components
+const Login = lazy(() => import('./components/Login'));
+const Signup = lazy(() => import('./components/Signup'));
+const Home = lazy(() => import('./pages/Home'));
+const Seller = lazy(() => import('./pages/Seller'));
+const Admin = lazy(() => import('./pages/Admin'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const ProductUpload = lazy(() => import('./pages/ProductUpload'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const Wishlist = lazy(() => import('./pages/Wishlist'));
+const Cart = lazy(() => import('./pages/Cart'));
+const SearchPage = lazy(() => import('./pages/SearchPage'));
+const ChooseOrder = lazy(() => import('./components/ChooseOrder'));
+const BuyNowForMe = lazy(() => import('./pages/BuyNowForMe'));
+const UserNotification = lazy(() => import('./pages/UserNotification'));
+const UserOrder = lazy(() => import('./pages/UserOrder'));
+const UserProfile = lazy(() => import('./pages/UserProfile'));
 
 const App = () => {
   return (
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Signup />} />
+    <>
+      {/* Suspense will show fallback while component is loading */}
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center h-screen text-xl font-bold">
+            Loading...
+          </div>
+        }
+      >
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Signup />} />
 
-       {/* Protected route for /home and its nested pages */}
-      <Route path="/home" element={<ProtectedRoute allowedRoles={['user']} />}>
-        {/* Default page on /home */}
-        <Route index element={<Home/>} />
-        <Route path='productdetail/:id' element={<ProductDetail/>} />
-        <Route path='wishlist' element={<Wishlist/>} />
-        <Route path='cart' element={<Cart/>} />
-        <Route path='searchproduct' element={<SearchPage/>} />
-        <Route path='choose-order/:id' element={<ChooseOrder/>} />
-        <Route path='buy-now-for-me/:id' element={<BuyNowForMe/>} />
-        <Route path='usernotification' element={<UserNotification/>} />
-        <Route path='userorder' element={<UserOrder/>} />
-        <Route path='userprofile' element={<UserProfile/>} />
-      </Route>
-        <Route
-          path="/vendor"
-          element={
-            <ProtectedRoute allowedRoles={['vendor']}>
-              <Seller />
-            </ProtectedRoute>
-          }
-        />
-        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-        <Route path="/admin" element={<Admin/>}>
-          <Route  index  element={<AdminDashboard />} />
-           <Route path='uploadproduct' element={<ProductUpload/>} />
-        </Route>
-      </Route>
-          
-          
+          {/* Protected route for /home and nested pages */}
+          <Route path="/home" element={<ProtectedRoute allowedRoles={['user', 'seller', 'admin', 'vendor']} />}>
+            <Route index element={<Home />} />
+            <Route path="productdetail/:id" element={<ProductDetail />} />
+            <Route path="wishlist" element={<Wishlist />} />
+            <Route path="cart" element={<Cart />} />
+            <Route path="searchproduct" element={<SearchPage />} />
+            <Route path="choose-order/:id" element={<ChooseOrder />} />
+            <Route path="buy-now-for-me/:id" element={<BuyNowForMe />} />
+            <Route path="buy-now-for-someone/:id" element={<BuyNowForSomeone />} />
+            <Route path="seller-information/:id" element={<SellerInformation />} />
+            <Route path="usernotification" element={<UserNotification />} />
+            <Route path="userorder" element={<UserOrder />} />
+            <Route path="userprofile" element={<UserProfile />} />
+          </Route>
 
-      </Routes>
-    
+          {/* Vendor Protected Route */}
+          <Route
+            path="/vendor"
+            element={
+              <ProtectedRoute allowedRoles={['vendor']}>
+                <Seller />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin Protected Routes */}
+          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route path="/admin" element={<Admin />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="uploadproduct" element={<ProductUpload />} />
+            </Route>
+          </Route>
+        </Routes>
+      </Suspense>
+      </>
   );
 };
 

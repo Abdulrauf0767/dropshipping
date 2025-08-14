@@ -5,6 +5,7 @@ import WishlistSlice from '../features/WishlistFeature';
 import CartSlice from '../features/CartFeatures';
 import BuyNowForMeSlice from '../features/BuyNowForMeFeatures';
 import notificationSlice from '../features/NotificationFeature';
+import sellerSlice from '../features/SellerFeature';
  const Store = configureStore({
     reducer: {
         user: UserSlice,
@@ -12,7 +13,8 @@ import notificationSlice from '../features/NotificationFeature';
         wishlist : WishlistSlice,
         cart : CartSlice,
         buyNowForMe: BuyNowForMeSlice,
-        notification : notificationSlice
+        notification : notificationSlice,
+        seller : sellerSlice
     }
 })
 
