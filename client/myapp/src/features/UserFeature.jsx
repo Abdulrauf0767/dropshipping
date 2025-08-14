@@ -95,6 +95,83 @@ export const allUsers = createAsyncThunk(
     }
 )
 
+export const blockUser = createAsyncThunk(
+    'users/block user',
+    async (id,{rejectWithValue}) => {
+        try {
+            let res = await axios.patch(`http://localhost:5001/api/user/block/${id}`,{},{
+                headers : {
+                    "Content-Type" : "application/json",
+                    "apikey" : import.meta.env.VITE_API_KEY,
+                    Authorization : `Bearer ${localStorage.getItem('token')}`
+                },
+                withCredentials : true
+            })
+            return res.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data)
+        }
+    }
+)
+
+export const unBlockUser = createAsyncThunk(
+    'users/unblock user',
+    async (id,{rejectWithValue}) => {
+        try {
+            let res = await axios.patch(`http://localhost:5001/api/user/unblock/${id}`,{},{
+                headers : {
+                    "Content-Type" : "application/json",
+                    "apikey" : import.meta.env.VITE_API_KEY,
+                    Authorization : `Bearer ${localStorage.getItem('token')}`
+                },
+                withCredentials : true
+            })
+            return res.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data)
+        }
+    }
+)
+
+export const getallBlockedUsers = createAsyncThunk(
+    'users/get all blocked users',
+    async (_,{rejectWithValue}) => {
+        try {
+            let res = await axios.get('http://localhost:5001/api/user/blocked-users',{
+                headers : {
+                    "Content-Type" : "application/json",
+                    "apikey" : import.meta.env.VITE_API_KEY,
+                    Authorization : `Bearer ${localStorage.getItem('token')}`
+                },
+                withCredentials : true
+            })
+            return res.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data)
+        }
+    }
+)
+
+export const searchUsers = createAsyncThunk(
+  'users/searchUsers',
+  async (query, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(`http://localhost:5001/api/user/search-user`, {
+        params: { query }, // ✅ query parameter ke through bhejna
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": import.meta.env.VITE_API_KEY,
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        withCredentials: true
+      });
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: error.message });
+    }
+  }
+);
+
 const UserSlice = createSlice({
     name: 'user',
     initialState: {
@@ -104,6 +181,7 @@ const UserSlice = createSlice({
         profile : [],
         alluser :[]
     },
+
     extraReducers: (builder) => {
         builder
             .addCase(signUp.pending, (state) => {
@@ -180,6 +258,54 @@ const UserSlice = createSlice({
                 state.alluser = action.payload.users;
             })
             .addCase(allUsers.rejected,(state,action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(getallBlockedUsers.pending,(state,action) => {
+                state.status = 'loading';
+            })
+            .addCase(getallBlockedUsers.fulfilled,(state,action) => {
+                state.status = 'succeeded';
+                state.alluser = action.payload.users;
+            })
+            .addCase(getallBlockedUsers.rejected,(state,action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(searchUsers.pending,(state,action) => {
+                state.status = 'loading';
+            })
+            .addCase(searchUsers.fulfilled,(state,action) => {
+                state.status = 'succeeded';
+                state.alluser = action.payload.users;
+            })
+            .addCase(searchUsers.rejected,(state,action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(unBlockUser.pending,(state,action) => {
+                state.status = 'loading';
+            })
+            .addCase(unBlockUser.fulfilled,(state,action) => {
+                state.status = 'succeeded';
+                   state.alluser = state.alluser.map(user => 
+                    user._id === action.payload._id ? action.payload : user
+                );
+            })
+            .addCase(unBlockUser.rejected,(state,action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(blockUser.pending,(state,action) => {
+                state.status = 'loading';
+            })
+            .addCase(blockUser.fulfilled,(state,action) => {
+                state.status = 'succeeded';
+                  state.alluser = state.alluser.map(user => 
+                    user._id === action.payload._id ? action.payload : user
+                );
+            })
+            .addCase(blockUser.rejected,(state,action) => {
                 state.status = 'failed';
                 state.error = action.error.message;
             })

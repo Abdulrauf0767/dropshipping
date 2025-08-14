@@ -117,7 +117,96 @@ class UserController {
         }
     }
 
-    
+
+    static async blockUser(req, res) {
+    try {
+      const userId = req.params.id;
+      const user = await UserModel.findById(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      if (user.isBlocked) {
+        return res
+          .status(400)
+          .json({ message: "User is already blocked", isBlocked: true });
+      }
+
+      user.isBlocked = true;
+      await user.save();
+
+      return res
+        .status(200)
+        .json({ message: "User blocked successfully", isBlocked: true });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+
+  // Unblock a user
+  static async unblockUser(req, res) {
+    try {
+      const userId = req.params.id;
+      const user = await UserModel.findById(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      if (!user.isBlocked) {
+        return res
+          .status(400)
+          .json({ message: "User is already active", isBlocked: false });
+      }
+
+      user.isBlocked = false;
+      await user.save();
+
+      return res
+        .status(200)
+        .json({ message: "User unblocked successfully", isBlocked: false });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+
+  // Get all blocked users
+  static async getBlockedUsers(req, res) {
+    try {
+      const blockedUsers = await UserModel.find({ isBlocked: true });
+      return res.status(200).json({ users: blockedUsers });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+
+static async searchUsers(req, res) {
+        try {
+            const query = req.query.query?.trim();
+
+            if (!query) {
+                return res.status(400).json({ message: "Search query is required" });
+            }
+
+            // Case-insensitive search on name, email, role
+            const regex = new RegExp(query, 'i');
+            const users = await UserModel.find({
+                $or: [
+                    { name: regex },
+                    { email: regex },
+                    { role: regex }
+                ]
+            });
+
+            return res.status(200).json({
+                message: 'Users fetched successfully',
+                total: users.length,
+                users
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Something went wrong", error: error.message });
+        }
+    }
 }
+
 
 module.exports = UserController;

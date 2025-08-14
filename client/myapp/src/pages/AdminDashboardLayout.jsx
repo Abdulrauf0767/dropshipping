@@ -72,13 +72,12 @@ const AdminDashboardLayout = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", minHeight: "100vh" }}>
         <CssBaseline />
 
-        {/* Top AppBar */}
         <AppBar
           position="fixed"
-          elevation={1} // Reduced shadow
+          elevation={1}
           sx={{
             zIndex: (theme) => theme.zIndex.drawer + 1,
             backgroundColor: "#fff",
@@ -106,7 +105,6 @@ const AdminDashboardLayout = () => {
           </Toolbar>
         </AppBar>
 
-        {/* Sidebar Drawer */}
         <Drawer
           variant="permanent"
           sx={{
@@ -137,12 +135,14 @@ const AdminDashboardLayout = () => {
             {sideBarData.map((item, index) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.link;
+
               const listItemStyles = {
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
                 backgroundColor: isActive ? "#e3f2fd" : "inherit",
                 color: isActive ? "#1976d2" : "inherit",
                 "&:hover": { backgroundColor: "#e3f2fd", color: "#1976d2" },
+                transition: "all 0.3s ease",
               };
 
               if (item.isLogout) {
@@ -175,7 +175,11 @@ const AdminDashboardLayout = () => {
                   sx={listItemStyles}
                 >
                   <ListItemIcon
-                    sx={{ minWidth: 0, mr: open ? 3 : "auto", justifyContent: "center" }}
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
                   >
                     <Icon />
                   </ListItemIcon>
@@ -186,10 +190,28 @@ const AdminDashboardLayout = () => {
           </List>
         </Drawer>
 
-        {/* Main Content */}
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <Toolbar /> 
-          <Outlet /> 
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            width: `calc(100% - ${open ? drawerWidth : collapsedWidth}px)`,
+            overflowX: "auto",
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Toolbar />
+          <Box
+            sx={{
+              p: 3,
+              flex: 1,
+              minWidth: "max-content",
+              overflowX: "auto",
+            }}
+          >
+            <Outlet />
+          </Box>
         </Box>
       </Box>
     </ThemeProvider>
