@@ -106,6 +106,13 @@ const ProductDetail = () => {
           {product && (
             <>
               <h1 className='text-3xl font-bold font-lisuBusa '>{product.name}</h1>  
+              <div className='flex items-center ' >
+                {product.stock > 0 ? (
+                  <p className='text-lg bg-green-600 text-white p-2 rounded-3xl font-lisuBusa'>In Stock</p>
+                ) : (
+                  <p className='text-lg text-white bg-red-600 p-2 rounded-3xl font-lisuBusa'>Out of Stock</p>
+                )}
+              </div>
               <h3 className='text-2xl font-semibold font-lisuBusa flex items-center gap-x-2 '>
                 Brand : 
                 <p className='w-auto h-auto bg-[#a6edb1] font-lisuBusa p-3 pl-3 pr-3  rounded-3xl'>

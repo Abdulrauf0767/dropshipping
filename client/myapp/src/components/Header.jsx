@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import logo from "/images/website-logo.png";
 import {
   SearchOutlined,
@@ -10,7 +10,7 @@ import {
   Menu,
   Close
 } from "@mui/icons-material";
-import { logout } from '../features/UserFeature';
+import { getUserProfile, logout } from '../features/UserFeature';
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { io } from "socket.io-client";
@@ -42,6 +42,10 @@ const Header = () => {
   const handleLogout = () => {
     dispatch(logout());
   };
+
+  useEffect(() => {
+    dispatch(getUserProfile());
+  },[dispatch])
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
