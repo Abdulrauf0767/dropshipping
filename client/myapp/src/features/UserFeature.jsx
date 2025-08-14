@@ -76,6 +76,24 @@ export const getUserProfile = createAsyncThunk('/user/profile', async () => {
     return res.data;
 });
 
+export const allUsers = createAsyncThunk(
+    'users/all users',
+    async (_,{rejectWithValue}) => {
+        try {
+            let res = await axios.get('http://localhost:5001/api/user/all',{
+                headers : {
+                    "Content-Type" : "application/json",
+                    "apikey" : import.meta.env.VITE_API_KEY,
+                    Authorization : `Bearer ${localStorage.getItem('token')}`
+                },
+                withCredentials : true
+            })
+            return res.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data)
+        }
+    }
+)
 
 const UserSlice = createSlice({
     name: 'user',
@@ -83,7 +101,8 @@ const UserSlice = createSlice({
         status: 'idle',
         user: null,
         error: '',
-        profile : []
+        profile : [],
+        alluser :[]
     },
     extraReducers: (builder) => {
         builder
@@ -150,6 +169,17 @@ const UserSlice = createSlice({
                 state.profile = action.payload;
             })
             .addCase(getUserProfile.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(allUsers.pending,(state,action) => {
+                state.status = 'loading';
+            })
+            .addCase(allUsers.fulfilled,(state,action) => {
+                state.status = 'succeeded';
+                state.alluser = action.payload.users;
+            })
+            .addCase(allUsers.rejected,(state,action) => {
                 state.status = 'failed';
                 state.error = action.error.message;
             })

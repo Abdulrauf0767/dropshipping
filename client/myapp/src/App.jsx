@@ -4,12 +4,13 @@ import ProtectedRoute from './components/ProtectedRoute'; // Keep normal import 
 import BuyNowForSomeone from './pages/BuyNowForSomeone';
 import SellerInformation from './components/SellerInformation';
 
+
+
 // Lazy-loaded components
 const Login = lazy(() => import('./components/Login'));
 const Signup = lazy(() => import('./components/Signup'));
 const Home = lazy(() => import('./pages/Home'));
 const Seller = lazy(() => import('./pages/Seller'));
-const Admin = lazy(() => import('./pages/Admin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const ProductUpload = lazy(() => import('./pages/ProductUpload'));
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
@@ -21,7 +22,8 @@ const BuyNowForMe = lazy(() => import('./pages/BuyNowForMe'));
 const UserNotification = lazy(() => import('./pages/UserNotification'));
 const UserOrder = lazy(() => import('./pages/UserOrder'));
 const UserProfile = lazy(() => import('./pages/UserProfile'));
-
+const AdminUsers = lazy(() => import('./pages/AdminUsers'));
+const AdminDashboardLayout = lazy(() => import('./pages/AdminDashboardLayout'));
 const App = () => {
   return (
     <>
@@ -66,9 +68,11 @@ const App = () => {
 
           {/* Admin Protected Routes */}
           <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-            <Route path="/admin" element={<Admin />}>
+            <Route path="/admin" element={<AdminDashboardLayout />}>
               <Route index element={<AdminDashboard />} />
+              <Route path='dashboard' element={<AdminDashboard />} />
               <Route path="uploadproduct" element={<ProductUpload />} />
+              <Route path="users" element={<AdminUsers />} />
             </Route>
           </Route>
         </Routes>
