@@ -19,7 +19,23 @@ export const becomeVendor = createAsyncThunk(
             return rejectWithValue(error.response.data);
         }
     })
-
+export const searchVendor = createAsyncThunk(
+    'vendor/searchVendor',
+    async ({query,limit = 100}, { rejectWithValue }) => {
+        try {
+            const response = await axios.get(`${baseUrl}/search-vendors?query=${query}&limit=${limit}`, {
+                headers: {
+                    "apikey": import.meta.env.VITE_API_KEY,
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                withCredentials: true,
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+)
 export const allVendors = createAsyncThunk(
     'vendor/allVendors',
     async (_, { rejectWithValue }) => {
@@ -106,6 +122,24 @@ export const verifyVendor = createAsyncThunk(
         }
     } )
 
+ export const rejectVendor = createAsyncThunk(
+    'vendor/rejectVendor',
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axios.patch(`${baseUrl}/reject-vendor/${id}`, {}, {
+                headers: {
+                    "apikey": import.meta.env.VITE_API_KEY,
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                withCredentials: true,
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+ )   
+
 export const blockVendor = createAsyncThunk(
     'vendor/blockVendor',
     async (id, { rejectWithValue }) => {
@@ -187,7 +221,7 @@ const vendorSlice = createSlice({
         })
         .addCase(allVendors.fulfilled, (state, action) => {
             state.loading = false;
-            state.list = action.payload;
+            state.list = action.payload.vendors;
         })
         .addCase(allVendors.rejected, (state, action) => {
             state.loading = false;
@@ -274,6 +308,30 @@ const vendorSlice = createSlice({
             state.list = action.payload.vendors;
         })
         .addCase(pendingVendors.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+        .addCase(rejectVendor.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(rejectVendor.fulfilled, (state, action) => {
+            state.loading = false;
+            state.list = action.payload;
+        })
+        .addCase(rejectVendor.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+        .addCase(searchVendor.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(searchVendor.fulfilled, (state, action) => {
+            state.loading = false;
+            state.list = action.payload.data;
+        })
+        .addCase(searchVendor.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload;
         })

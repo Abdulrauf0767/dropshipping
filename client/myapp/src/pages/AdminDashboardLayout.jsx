@@ -9,6 +9,8 @@ import {
   FiGrid,
 } from "react-icons/fi";
 import {
+  BlockOutlined,
+  FaceRetouchingOffOutlined,
   KeyboardArrowDownOutlined,
   KeyboardArrowUpOutlined,
   LogoutOutlined,
@@ -33,6 +35,8 @@ const AdminDashboardLayout = () => {
     { icon: FiUser, text: "Users", link: "/admin/users" },
     { icon: StorefrontOutlined, text: "Vendors", link: "/admin/vendors" },
     { icon: PendingOutlined, text: " Pending Vendors", link: "/admin/pending-vendors" },
+    { icon: BlockOutlined, text: " Blocked Vendors", link: "/admin/blocked-vendors" },
+    { icon: FaceRetouchingOffOutlined, text: " Rejected Vendors", link: "/admin/rejected-vendors" },
   ];
 
   const productSubmenu = [

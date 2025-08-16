@@ -28,6 +28,9 @@ const UserProfile = lazy(() => import('./pages/UserProfile'));
 const AdminUsers = lazy(() => import('./pages/AdminUsers'));
 const AdminDashboardLayout = lazy(() => import('./pages/AdminDashboardLayout'));
 const PendingVendorDetails = lazy(() => import('./pages/PendingVendorDetails'));
+const Vendors = lazy(() => import('./pages/Vendors'));
+const RejectedVendors = lazy(() => import('./pages/RejectedVendors'));
+const BlockedVendors = lazy(() => import('./pages/BlockedVendors'));
 const App = () => {
   return (
     <>
@@ -80,7 +83,10 @@ const App = () => {
               <Route path="users" element={<AdminUsers />} />
               <Route path="categories" element={<AdminCategories />} />
               <Route path="pending-vendors" element={<PendingVendors />} />
+              <Route path="vendors" element={<Vendors />} />
               <Route path="pending-vendors/:id" element={<PendingVendorDetails />} />
+              <Route path="rejected-vendors" element={<RejectedVendors />} />
+              <Route path="blocked-vendors" element={<BlockedVendors />} />
             </Route>
           </Route>
         </Routes>

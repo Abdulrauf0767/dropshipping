@@ -42,7 +42,7 @@ const PendingVendors = () => {
               <img
                 src={vendor.storeLogo}
                 alt={vendor.name}
-                className="w-full h-full object-fit rounded-md "
+                className="w-full h-full object-fill rounded-md "
               />
             </div>
             <div className="md:w-[30%] w-[60%]  h-full ml-5 " >

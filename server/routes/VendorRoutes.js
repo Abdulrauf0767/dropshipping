@@ -107,4 +107,22 @@ vendorRoutes.get(
   VendorController.pendingVendor
 );
 
+// Route to reject vendor
+vendorRoutes.patch(
+  '/reject-vendor/:id',
+  apikeyMiddleware,
+  verifyToken,
+  isAdmin,
+  VendorController.rejectVendor
+);
+
+// search vendors
+vendorRoutes.get(
+  '/search-vendors',
+  apikeyMiddleware,
+  verifyToken,
+  isAdmin,
+  VendorController.searchVendors
+);
+
 module.exports = vendorRoutes;

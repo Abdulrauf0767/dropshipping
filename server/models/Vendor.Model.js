@@ -60,6 +60,12 @@ let vendorSchema = new mongoose.Schema({
     websiteURL :{
         type: String,
     },
+    status : {
+      type : String,
+      required : true,
+      enum : ['pending','approved','rejected'], 
+      default : 'pending' 
+    },
     isVerified : {
         type: Boolean,
         default: false
