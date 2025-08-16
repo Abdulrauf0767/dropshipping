@@ -7,6 +7,7 @@ import {
   FiBox,
   FiPlusSquare,
   FiGrid,
+  FiCheck,
 } from "react-icons/fi";
 import {
   BlockOutlined,
@@ -42,6 +43,7 @@ const AdminDashboardLayout = () => {
   const productSubmenu = [
     { icon: FiPlusSquare, text: "Add Product", link: "/admin/uploadproduct" },
     { icon: FiGrid, text: "Categories", link: "/admin/categories" },
+    { icon: FiCheck, text: "All Products", link: "/admin/all-products" },
   ];
 
   return (

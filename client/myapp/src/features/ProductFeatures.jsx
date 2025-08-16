@@ -98,6 +98,44 @@ export const getAllCategories = createAsyncThunk(
   }
 )
 
+export const getAllProductsAdmin = createAsyncThunk(
+  'allproducts/productsadmin',
+  async ({limit = 200, page = 1}, {rejectWithValue}) => {
+    try {
+        const res = await axios.get(`http://localhost:5001/api/product/all-product?limit=${limit}&page=${page}`, {
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": import.meta.env.VITE_API_KEY,
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            withCredentials: true
+        });
+        return res.data.products;
+    } catch (error) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+)
+
+export const productByUser = createAsyncThunk(
+  'user/all products',
+  async ({limit = 200, page = 1}, {rejectWithValue}) => {
+    try {
+        const res = await axios.get(`http://localhost:5001/api/product/user-product?limit=${limit}&page=${page}`, {
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": import.meta.env.VITE_API_KEY,
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            withCredentials: true
+        });
+        return res.data.products;
+    } catch (error) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+)
+
 
 const ProductSlice = createSlice({
   name: 'product',
@@ -166,6 +204,30 @@ const ProductSlice = createSlice({
         state.list = action.payload.categories;
       })
       .addCase(getAllCategories.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(getAllProductsAdmin.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(getAllProductsAdmin.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.list = action.payload;
+      })
+      .addCase(getAllProductsAdmin.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(productByUser.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(productByUser.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.list = action.payload;
+      })
+      .addCase(productByUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload || action.error.message;
       });

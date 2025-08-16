@@ -8,7 +8,7 @@ let verifyToken = require('../middlewares/VerifyToken');
 let ApiKeyMiddleware = require('../middlewares/ApiKeyMiddleware');
 let ProductUpload = require('../middlewares/ProductMulter');
 let IsAdminOrVendor = require('../middlewares/IsAdminOrVendor');
-
+let IsAdmin = require('../middlewares/IsAdmin');
 // CREATE product (multiple images)
 ProductRoutes.post(
     '/create',
@@ -48,5 +48,7 @@ ProductRoutes.get('/search', ApiKeyMiddleware,verifyToken, ProductController.sea
 // GET by category
 ProductRoutes.get('/category', ApiKeyMiddleware,verifyToken, ProductController.getProductByCategory);
 ProductRoutes.get('/all-category', ApiKeyMiddleware,verifyToken,IsAdminOrVendor, ProductController.allCategoriesofProduct);
+ProductRoutes.get('/all-product', ApiKeyMiddleware,verifyToken,IsAdmin, ProductController.allProductDataAdmin);
+ProductRoutes.get('/user-product', ApiKeyMiddleware,verifyToken, IsAdminOrVendor,ProductController.getProductByUser);
 
 module.exports = ProductRoutes;

@@ -240,6 +240,36 @@ async updateProductById(req, res) {
             return res.status(500).json({ message: 'Something went wrong', error: error.message });
         }
     }
+
+    async allProductDataAdmin (req,res) {
+        try {
+            let limit = parseInt(req.query.limit) || 10;
+            let page = parseInt(req.query.page) || 1;
+            let skip = (page - 1) * limit;
+            let total = await productModel.countDocuments();
+            let products = await productModel.find().skip(skip).limit(limit).populate("user", "name email");
+            return res.status(200).json({ message: 'Products fetched successfully', products, page, limit, total });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Something went wrong', error: error.message });
+        }
+    }
+
+    async getProductByUser (req,res) {
+        try {
+            let userId = req.user._id;
+            let limit = parseInt(req.query.limit) || 10;
+            let page = parseInt(req.query.page) || 1;
+            let skip = (page - 1) * limit;
+            let total = await productModel.countDocuments({ user: userId });
+            let products = await productModel.find({ user: userId }).skip(skip).limit(limit);
+            return res.status(200).json({ message: 'Products fetched successfully', products, page, limit, total });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Something went wrong', error: error.message });
+        }
+    }
+
 }
 
 module.exports = new productController();
