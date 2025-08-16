@@ -104,10 +104,11 @@ const Header = () => {
           <NotificationsNone />
           {hasUnread && <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-blue-400 rounded-full blur-[1px]"></span>}
         </Link>
-
+          <Link to={'/home/becomevendor'}>
         <span className="flex items-center gap-x-1 cursor-pointer w-auto h-10 border-2 border-gray-200 p-2 rounded-3xl">
           Become a Seller <StorefrontOutlined />
         </span>
+        </Link>
 
         {/* Desktop Account Dropdown */}
         <div className="relative group">
@@ -174,9 +175,11 @@ const Header = () => {
             <NotificationsNone /> Notifications
             {hasUnread && <span className="absolute left-6 top-1 w-2.5 h-2.5 bg-blue-400 rounded-full blur-[1px]"></span>}
           </Link>
+          <Link to={'/home/becomevendor'} >
           <span className="flex items-center gap-x-2">
             Become a Seller <StorefrontOutlined />
           </span>
+          </Link>
 
           {/* Mobile Account */}
           <div className="flex flex-col mt-2">

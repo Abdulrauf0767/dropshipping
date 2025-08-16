@@ -201,22 +201,43 @@ class BuyNowForMeController {
 
   // Update orderStatus only
   async updateOrderStatus(req, res) {
-    try {
-      const orderId = req.params.id;
-      const { orderStatus } = req.body;
-      if (!orderStatus) {
-        return res.status(400).json({ message: 'orderStatus is required' });
-      }
-      const updatedOrder = await BuynowformeModel.findByIdAndUpdate(orderId, { orderStatus }, { new: true });
-      if (!updatedOrder) {
-        return res.status(404).json({ message: 'Order not found' });
-      }
-      return res.status(200).json({ message: 'Order status updated successfully', order: updatedOrder });
-    } catch (error) {
-      console.error('Error updating order status:', error);
-      return res.status(500).json({ message: 'Something went wrong', error: error.message });
+  try {
+    const orderId = req.params.id;
+    const { orderStatus } = req.body;
+
+    if (!orderStatus) {
+      return res.status(400).json({ message: 'orderStatus is required' });
     }
+
+    // Find the order first
+    const order = await BuynowformeModel.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Check if status is already delivered to prevent double decrement
+    const wasDelivered = order.orderStatus === 'delivered';
+    
+    // Update order status
+    order.orderStatus = orderStatus;
+    await order.save();
+
+    // Reduce product stock only if status changed to delivered
+    if (orderStatus === 'delivered' && !wasDelivered) {
+      const product = await ProductModel.findById(orderId);
+      if (product) {
+        // Subtract sold quantity from stock
+        product.stock = Math.max(product.stock - order.quantity, 0); // stock never goes negative
+        await product.save();
+      }
+    }
+
+    return res.status(200).json({ message: 'Order status updated successfully', order });
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    return res.status(500).json({ message: 'Something went wrong', error: error.message });
   }
+}
 
   // Update paymentStatus only
   async updatePaymentStatus(req, res) {
@@ -236,6 +257,8 @@ class BuyNowForMeController {
       return res.status(500).json({ message: 'Something went wrong', error: error.message });
     }
   }
+
 }
+
 
 module.exports = new BuyNowForMeController();

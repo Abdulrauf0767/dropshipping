@@ -227,6 +227,19 @@ async updateProductById(req, res) {
             return res.status(500).json({ message: 'Something went wrong', error: error.message });
         }
     }
+
+    async allCategoriesofProduct (req,res) {
+        try {
+            let categories = await productModel.distinct('category');
+            if (!categories || categories.length === 0) {
+                return res.status(404).json({ message: 'No categories found' });
+            }
+            return res.status(200).json({ message: 'Categories fetched successfully', categories });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Something went wrong', error: error.message });
+        }
+    }
 }
 
 module.exports = new productController();

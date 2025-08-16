@@ -79,6 +79,25 @@ export const searchProductsByCategory = createAsyncThunk(
   }
 )
 
+export const getAllCategories = createAsyncThunk(
+  'allcategories/categories',
+  async (_, {rejectWithValue}) => {
+    try {
+        const res = await axios.get('http://localhost:5001/api/product/all-category', {
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": import.meta.env.VITE_API_KEY,
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            withCredentials: true
+        });
+        return res.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+)
+
 
 const ProductSlice = createSlice({
   name: 'product',
@@ -135,6 +154,18 @@ const ProductSlice = createSlice({
         state.list = action.payload.products;
       })
       .addCase(searchProductsByCategory.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(getAllCategories.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(getAllCategories.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.list = action.payload.categories;
+      })
+      .addCase(getAllCategories.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload || action.error.message;
       });

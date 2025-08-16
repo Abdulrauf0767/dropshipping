@@ -1,220 +1,155 @@
 import React, { useState } from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import {
-  Box,
-  CssBaseline,
-  AppBar,
-  Toolbar,
-  Typography,
-  Drawer,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  IconButton,
-  useTheme
-} from "@mui/material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+  FiMenu,
+  FiChevronLeft,
+  FiUser,
+  FiBox,
+  FiPlusSquare,
+  FiGrid,
+} from "react-icons/fi";
 import {
-  Dashboard,
-  AccountCircle,
-  Grading,
-  Storefront,
-  PendingActions,
-  Repartition,
-  FileUploadOutlined,
-  CategoryOutlined,
-  BlockOutlined,
-  ReportOutlined,
+  KeyboardArrowDownOutlined,
+  KeyboardArrowUpOutlined,
   LogoutOutlined,
-  SettingsOutlined,
-  Menu as MenuIcon
+  PendingOutlined,
+  StorefrontOutlined,
 } from "@mui/icons-material";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "../features/UserFeature";
 
-const drawerWidth = 280;
-const collapsedWidth = 70;
-
-const sideBarData = [
-  { icon: Dashboard, title: "Dashboard", link: "/admin/dashboard" },
-  { icon: AccountCircle, title: "Users", link: "/admin/users" },
-  { icon: Grading, title: "Orders", link: "/admin/orders" },
-  { icon: Storefront, title: "Sellers", link: "/admin/sellers" },
-  { icon: PendingActions, title: "Pending Sellers", link: "/admin/pending-sellers" },
-  { icon: PendingActions, title: "Pending Orders", link: "/admin/pending-orders" },
-  { icon: Repartition, title: "Rejected Orders", link: "/admin/rejected-orders" },
-  { icon: FileUploadOutlined, title: "Upload Product", link: "/admin/uploadproduct" },
-  { icon: CategoryOutlined, title: "Categories", link: "/admin/categories" },
-  { icon: BlockOutlined, title: "Blocked Sellers", link: "/admin/blocked-sellers" },
-  { icon: BlockOutlined, title: "Blocked Users", link: "/admin/blocked-users" },
-  { icon: ReportOutlined, title: "Reports", link: "/admin/reports" },
-  { icon: SettingsOutlined, title: "Settings", link: "/admin/settings" },
-  { icon: LogoutOutlined, title: "Logout", link: "/", isLogout: true },
-];
-
-const theme = createTheme({
-  palette: { mode: "light" },
-  typography: { fontFamily: "'Roboto', sans-serif" },
-});
-
 const AdminDashboardLayout = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [productMenuOpen, setProductMenuOpen] = useState(false);
   const location = useLocation();
-  const [open, setOpen] = useState(true);
-  const muiTheme = useTheme();
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/");
   };
 
+  const SideBarNav = [
+    { icon: FiGrid, text: "Dashboard", link: "/admin/dashboard" },
+    { icon: FiUser, text: "Users", link: "/admin/users" },
+    { icon: StorefrontOutlined, text: "Vendors", link: "/admin/vendors" },
+    { icon: PendingOutlined, text: " Pending Vendors", link: "/admin/pending-vendors" },
+  ];
+
+  const productSubmenu = [
+    { icon: FiPlusSquare, text: "Add Product", link: "/admin/uploadproduct" },
+    { icon: FiGrid, text: "Categories", link: "/admin/categories" },
+  ];
+
   return (
-    <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex", minHeight: "100vh" }}>
-        <CssBaseline />
+    <div className="flex">
+      {/* Sidebar */}
+      <div
+        className={`bg-white shadow-lg transition-all duration-300 ease-in-out
+          ${open ? "w-60" : "w-16"} h-screen fixed top-0 left-0`}
+      >
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between p-3 border-b">
+          {open && <h1 className="text-lg font-bold">Admin</h1>}
+          <button className="text-xl" onClick={() => setOpen(!open)}>
+            {open ? <FiChevronLeft /> : <FiMenu />}
+          </button>
+        </div>
 
-        <AppBar
-          position="fixed"
-          elevation={1}
-          sx={{
-            zIndex: (theme) => theme.zIndex.drawer + 1,
-            backgroundColor: "#fff",
-            color: "#000",
-            transition: muiTheme.transitions.create(["width", "margin"], {
-              easing: muiTheme.transitions.easing.sharp,
-              duration: muiTheme.transitions.duration.leavingScreen,
-            }),
-            ml: open ? `${drawerWidth}px` : `${collapsedWidth}px`,
-            width: `calc(100% - ${open ? drawerWidth : collapsedWidth}px)`,
-          }}
-        >
-          <Toolbar sx={{ display: "flex", alignItems: "center" }}>
-            <IconButton
-              color="inherit"
-              edge="start"
-              onClick={() => setOpen(!open)}
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap component="div">
-              Admin Panel
-            </Typography>
-          </Toolbar>
-        </AppBar>
+        {/* Sidebar Menu */}
+        <nav className="mt-4">
+          {/* Main Nav Items */}
+          {SideBarNav.map((item, idx) => {
+            const isActive = location.pathname === item.link;
+            const Icon = item.icon;
+            return (
+              <NavLink
+                key={idx}
+                to={item.link}
+                className={`flex items-center p-3 rounded-md mx-2 mb-1 transition-colors
+                  ${
+                    isActive
+                      ? "bg-blue-100 text-blue-600"
+                      : "hover:bg-blue-100 hover:text-blue-600"
+                  }`}
+              >
+                <Icon className="text-lg" />
+                {open && <span className="ml-3">{item.text}</span>}
+              </NavLink>
+            );
+          })}
 
-        <Drawer
-          variant="permanent"
-          sx={{
-            width: open ? drawerWidth : collapsedWidth,
-            flexShrink: 0,
-            whiteSpace: "nowrap",
-            boxSizing: "border-box",
-            transition: muiTheme.transitions.create("width", {
-              easing: muiTheme.transitions.easing.sharp,
-              duration: muiTheme.transitions.duration.enteringScreen,
-            }),
-            [`& .MuiDrawer-paper`]: {
-              width: open ? drawerWidth : collapsedWidth,
-              overflowX: "hidden",
-              backgroundColor: "#f8f8f8",
-              borderRight: "1px solid #ddd",
-              transition: muiTheme.transitions.create("width", {
-                easing: muiTheme.transitions.easing.sharp,
-                duration: muiTheme.transitions.duration.enteringScreen,
-              }),
-            },
-          }}
-        >
-          <Toolbar sx={{ justifyContent: "center", py: 2 }}>
-            {open && <Typography variant="h6">Admin</Typography>}
-          </Toolbar>
-          <List>
-            {sideBarData.map((item, index) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.link;
-
-              const listItemStyles = {
-                justifyContent: open ? "initial" : "center",
-                px: 2.5,
-                backgroundColor: isActive ? "#e3f2fd" : "inherit",
-                color: isActive ? "#1976d2" : "inherit",
-                "&:hover": { backgroundColor: "#e3f2fd", color: "#1976d2" },
-                transition: "all 0.3s ease",
-              };
-
-              if (item.isLogout) {
-                return (
-                  <ListItemButton
-                    key={index}
-                    onClick={handleLogout}
-                    sx={listItemStyles}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: 0,
-                        mr: open ? 3 : "auto",
-                        justifyContent: "center",
-                        color: "red",
-                      }}
-                    >
-                      <Icon />
-                    </ListItemIcon>
-                    {open && <ListItemText primary={item.title} />}
-                  </ListItemButton>
-                );
-              }
-
-              return (
-                <ListItemButton
-                  key={index}
-                  component={Link}
-                  to={item.link}
-                  sx={listItemStyles}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : "auto",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Icon />
-                  </ListItemIcon>
-                  {open && <ListItemText primary={item.title} />}
-                </ListItemButton>
-              );
-            })}
-          </List>
-        </Drawer>
-
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            width: `calc(100% - ${open ? drawerWidth : collapsedWidth}px)`,
-            overflowX: "auto",
-            minHeight: "100vh",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Toolbar />
-          <Box
-            sx={{
-              p: 3,
-              flex: 1,
-              minWidth: "max-content",
-              overflowX: "auto",
-            }}
+          {/* Products Management */}
+          <button
+            onClick={() => setProductMenuOpen(!productMenuOpen)}
+            className="flex items-center w-full p-3 rounded-md mx-2 mb-1 hover:bg-blue-100 hover:text-blue-600 transition-colors"
           >
-            <Outlet />
-          </Box>
-        </Box>
-      </Box>
-    </ThemeProvider>
+            <FiBox className="text-lg" />
+            {open && <span className="ml-3 flex-1">Products Management</span>}
+            {open && (
+              <span>
+                {productMenuOpen ? (
+                  <KeyboardArrowUpOutlined />
+                ) : (
+                  <KeyboardArrowDownOutlined />
+                )}
+              </span>
+            )}
+          </button>
+
+          {/* Product Submenu */}
+          {productMenuOpen && (
+            <div
+              className={`transition-all overflow-hidden ${
+                open ? "pl-8" : ""
+              }`}
+            >
+              {productSubmenu.map((sub, idx) => {
+                const SubIcon = sub.icon;
+                const isActive = location.pathname === sub.link;
+                return (
+                  <NavLink
+                    key={idx}
+                    to={sub.link}
+                    className={`flex items-center p-3 rounded-md mx-2 mb-1 transition-colors
+                      ${
+                        isActive
+                          ? "bg-blue-100 text-blue-600"
+                          : "hover:bg-blue-100 hover:text-blue-600"
+                      }`}
+                  >
+                    <SubIcon className="text-lg" />
+                    {open && <span className="ml-3">{sub.text}</span>}
+                  </NavLink>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="flex items-center w-full p-3 rounded-md mx-2 mt-4 transition-colors text-red-500 hover:bg-red-100 hover:text-red-600"
+          >
+            <LogoutOutlined fontSize="small" />
+            {open && <span className="ml-3">Logout</span>}
+          </button>
+        </nav>
+      </div>
+
+      {/* Main Content */}
+      <div
+        className={`flex-1 transition-all duration-300 ease-in-out
+          ${open ? "ml-60" : "ml-16"} p-5`}
+      >
+        {/* Top Bar */}
+        <div className="flex items-center justify-between bg-white p-3 shadow rounded-md mb-5">
+          <h2 className="text-xl font-semibold">Admin Dashboard</h2>
+        </div>
+
+        {/* Page Content */}
+        <Outlet />
+      </div>
+    </div>
   );
 };
 

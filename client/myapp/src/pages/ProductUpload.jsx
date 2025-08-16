@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { uploadProduct } from '../features/ProductFeatures'; // apni actual file path yahan lagayen
+import { uploadProduct } from '../features/ProductFeatures';
 
 const MAX_IMAGES = 5;
 
@@ -23,7 +23,7 @@ const ProductUpload = () => {
       category: '',
       stock: '',
       sizes: '',
-      image: [], // Changed to array to hold multiple images properly
+      image: [],
       tags: '',
     },
     validationSchema: Yup.object({
@@ -41,7 +41,9 @@ const ProductUpload = () => {
         .transform((value, originalValue) => (originalValue === '' ? null : value)),
       color: Yup.string(),
       brand: Yup.string(),
-      category: Yup.string().required('Category is required'),
+      category: Yup.string()
+        .required('Category is required')
+        .notOneOf(['choose'], 'Please select a valid category'),
       stock: Yup.number()
         .typeError('Stock must be a number')
         .integer('Stock must be an integer')
@@ -63,29 +65,28 @@ const ProductUpload = () => {
     }),
     onSubmit: (values, { resetForm }) => {
       const colorsArray = values.color
-        ? values.color.split(',').map((c) => c.trim()).filter(Boolean)
+        ? values.color.split(',').map((c) => c.trim().toLowerCase()).filter(Boolean)
         : [];
       const sizesArray = values.sizes
-        ? values.sizes.split(',').map((s) => s.trim()).filter(Boolean)
+        ? values.sizes.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean)
         : [];
       const tagsArray = values.tags
-        ? values.tags.split(',').map((t) => t.trim()).filter(Boolean)
+        ? values.tags.split(',').map((t) => t.trim().toLowerCase()).filter(Boolean)
         : [];
 
       const formData = new FormData();
-      formData.append('name', values.name);
-      formData.append('description', values.description);
+      formData.append('name', values.name.toLowerCase());
+      formData.append('description', values.description.toLowerCase());
       formData.append('price', values.price);
       if (values.discountPrice) formData.append('discountPrice', values.discountPrice);
-      if (values.brand) formData.append('brand', values.brand);
-      formData.append('category', values.category);
+      if (values.brand) formData.append('brand', values.brand.toLowerCase());
+      formData.append('category', values.category.toLowerCase());
       formData.append('stock', values.stock);
 
       colorsArray.forEach((color) => formData.append('color[]', color));
       sizesArray.forEach((size) => formData.append('sizes[]', size));
       tagsArray.forEach((tag) => formData.append('tags[]', tag));
 
-      // Append all images correctly
       values.image.forEach((file) => formData.append('image', file));
 
       dispatch(uploadProduct(formData))
@@ -102,30 +103,29 @@ const ProductUpload = () => {
   });
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.currentTarget.files); // convert FileList to Array
+    const files = Array.from(e.currentTarget.files);
 
-    // Merge newly selected files with existing ones (to avoid removing previous)
     let newImages = [...formik.values.image, ...files];
 
-    // Remove duplicates by name and size (optional but recommended)
     newImages = newImages.filter(
       (file, index, self) =>
         index ===
-        self.findIndex((t) => t.name === file.name && t.size === file.size && t.lastModified === file.lastModified)
+        self.findIndex(
+          (t) => t.name === file.name && t.size === file.size && t.lastModified === file.lastModified
+        )
     );
 
     if (newImages.length > MAX_IMAGES) {
       alert(`You can only upload up to ${MAX_IMAGES} images`);
-      return; // don't update state if exceeds max
+      return;
     }
 
     formik.setFieldValue('image', newImages);
 
-    // Update preview URLs
     const previewUrls = newImages.map((file) => URL.createObjectURL(file));
     setPreviewImages(previewUrls);
 
-    e.target.value = null; // reset input to allow re-select same files if needed
+    e.target.value = null;
   };
 
   return (
@@ -133,9 +133,9 @@ const ProductUpload = () => {
       <div className="w-full max-w-md shadow-md rounded-md p-6 bg-white">
         <h1 className="text-2xl font-bold text-center mb-6 font-lisuBusa">Product Upload</h1>
         <form onSubmit={formik.handleSubmit} noValidate className="flex flex-col gap-4">
-          <label htmlFor="name" className="text-lg font-lisuBusa">
-            Product Name
-          </label>
+          
+          {/* Product Name */}
+          <label htmlFor="name" className="text-lg font-lisuBusa">Product Name</label>
           <input
             id="name"
             name="name"
@@ -148,9 +148,8 @@ const ProductUpload = () => {
           />
           {formik.touched.name && formik.errors.name && <p className="text-red-600">{formik.errors.name}</p>}
 
-          <label htmlFor="description" className="text-lg font-lisuBusa">
-            Product Description
-          </label>
+          {/* Description */}
+          <label htmlFor="description" className="text-lg font-lisuBusa">Product Description</label>
           <input
             id="description"
             name="description"
@@ -161,13 +160,10 @@ const ProductUpload = () => {
             onBlur={formik.handleBlur}
             value={formik.values.description}
           />
-          {formik.touched.description && formik.errors.description && (
-            <p className="text-red-600">{formik.errors.description}</p>
-          )}
+          {formik.touched.description && formik.errors.description && <p className="text-red-600">{formik.errors.description}</p>}
 
-          <label htmlFor="price" className="text-lg font-lisuBusa">
-            Price
-          </label>
+          {/* Price */}
+          <label htmlFor="price" className="text-lg font-lisuBusa">Price</label>
           <input
             id="price"
             name="price"
@@ -180,9 +176,8 @@ const ProductUpload = () => {
           />
           {formik.touched.price && formik.errors.price && <p className="text-red-600">{formik.errors.price}</p>}
 
-          <label htmlFor="discountPrice" className="text-lg font-lisuBusa">
-            Discount Price (Optional)
-          </label>
+          {/* Discount Price */}
+          <label htmlFor="discountPrice" className="text-lg font-lisuBusa">Discount Price (Optional)</label>
           <input
             id="discountPrice"
             name="discountPrice"
@@ -193,13 +188,10 @@ const ProductUpload = () => {
             onBlur={formik.handleBlur}
             value={formik.values.discountPrice}
           />
-          {formik.touched.discountPrice && formik.errors.discountPrice && (
-            <p className="text-red-600">{formik.errors.discountPrice}</p>
-          )}
+          {formik.touched.discountPrice && formik.errors.discountPrice && <p className="text-red-600">{formik.errors.discountPrice}</p>}
 
-          <label htmlFor="color" className="text-lg font-lisuBusa">
-            Colors (comma separated, Optional)
-          </label>
+          {/* Color */}
+          <label htmlFor="color" className="text-lg font-lisuBusa">Colors (comma separated, Optional)</label>
           <input
             id="color"
             name="color"
@@ -212,9 +204,8 @@ const ProductUpload = () => {
           />
           {formik.touched.color && formik.errors.color && <p className="text-red-600">{formik.errors.color}</p>}
 
-          <label htmlFor="brand" className="text-lg font-lisuBusa">
-            Brand (Optional)
-          </label>
+          {/* Brand */}
+          <label htmlFor="brand" className="text-lg font-lisuBusa">Brand (Optional)</label>
           <input
             id="brand"
             name="brand"
@@ -227,20 +218,26 @@ const ProductUpload = () => {
           />
           {formik.touched.brand && formik.errors.brand && <p className="text-red-600">{formik.errors.brand}</p>}
 
-          <label htmlFor="category" className="text-lg font-lisuBusa">
-            Category
-          </label>
-          <select name="category" id="category"className="w-full h-10 border-2 border-gray-200 rounded-md px-2 outline-none">
-            <option selected value="choose">Choose Your Product Category</option>
+          {/* Category */}
+          <label htmlFor="category" className="text-lg font-lisuBusa">Category</label>
+          <select
+            id="category"
+            name="category"
+            className="w-full h-10 border-2 border-gray-200 rounded-md px-2 outline-none"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.category}
+          >
+            <option value="choose">Choose Your Product Category</option>
             <option value="watch">Watch</option>
             <option value="hoodies">Hoodies</option>
-            <option value="electric">electric</option>
-            </select>
+            <option value="electric">Electric</option>
+            <option value="furniture">Furniture</option>
+          </select>
           {formik.touched.category && formik.errors.category && <p className="text-red-600">{formik.errors.category}</p>}
 
-          <label htmlFor="stock" className="text-lg font-lisuBusa">
-            Stock
-          </label>
+          {/* Stock */}
+          <label htmlFor="stock" className="text-lg font-lisuBusa">Stock</label>
           <input
             id="stock"
             name="stock"
@@ -253,9 +250,8 @@ const ProductUpload = () => {
           />
           {formik.touched.stock && formik.errors.stock && <p className="text-red-600">{formik.errors.stock}</p>}
 
-          <label htmlFor="sizes" className="text-lg font-lisuBusa">
-            Sizes (comma separated, Optional)
-          </label>
+          {/* Sizes */}
+          <label htmlFor="sizes" className="text-lg font-lisuBusa">Sizes (comma separated, Optional)</label>
           <input
             id="sizes"
             name="sizes"
@@ -268,9 +264,8 @@ const ProductUpload = () => {
           />
           {formik.touched.sizes && formik.errors.sizes && <p className="text-red-600">{formik.errors.sizes}</p>}
 
-          <label htmlFor="image" className="text-lg font-lisuBusa">
-            Product Image (1 to 5)
-          </label>
+          {/* Images */}
+          <label htmlFor="image" className="text-lg font-lisuBusa">Product Image (1 to 5)</label>
           <input
             id="image"
             name="image"
@@ -297,9 +292,8 @@ const ProductUpload = () => {
             </div>
           )}
 
-          <label htmlFor="tags" className="text-lg font-lisuBusa">
-            Tags (comma separated)
-          </label>
+          {/* Tags */}
+          <label htmlFor="tags" className="text-lg font-lisuBusa">Tags (comma separated)</label>
           <input
             id="tags"
             name="tags"
@@ -312,9 +306,11 @@ const ProductUpload = () => {
           />
           {formik.touched.tags && formik.errors.tags && <p className="text-red-600">{formik.errors.tags}</p>}
 
+          {/* Status */}
           {status === 'loading' && <p className="text-blue-600 font-semibold">Uploading product...</p>}
           {status === 'failed' && error && <p className="text-red-600 font-semibold">Error: {error}</p>}
 
+          {/* Submit */}
           <button
             type="submit"
             disabled={status === 'loading'}

@@ -6,6 +6,8 @@ let apiKeyMiddleware = require('../middlewares/ApiKeyMiddleware');
 let isBlocked = require('../middlewares/IsBlocked');
 let BuyNowFormeValidator = require('../validators/BuyNowForMeValidator');
 let validateRequest = require('../middlewares/ValidateRequest');
+let isAdminOrVendor = require('../middlewares/IsAdminOrVendor');
+
 
 BuyNowForMeRoutes.post('/create-order',apiKeyMiddleware, verifyToken, isBlocked, BuyNowFormeValidator, validateRequest, BuyNowForMeController.createOrder);
 BuyNowForMeRoutes.get('/get-orders', apiKeyMiddleware, verifyToken, isBlocked, BuyNowForMeController.getOrders);

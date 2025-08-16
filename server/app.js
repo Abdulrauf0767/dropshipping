@@ -48,6 +48,7 @@ const BuyNowForMeRoutes = require('./routes/BuyNowForMeRoutes');
 const ProfileRoutes = require('./routes/ProfileRoutes');
 const BuyNowForSomeoneRoutes = require('./routes/BuyNowForSomeoneRoutes');
 const SellerRoutes = require('./routes/SellerRoutes');
+const vendorRoutes = require('./routes/VendorRoutes');
 
 app.use('/api/user', UserRoutes);
 app.use('/api/product', ProductRoutes);
@@ -58,6 +59,7 @@ app.use('/api/buynowforme', BuyNowForMeRoutes);
 app.use('/api/profile', ProfileRoutes);
 app.use('/api/buynowforsomeone', BuyNowForSomeoneRoutes);
 app.use('/api/seller', SellerRoutes);
+app.use('/api/vendor', vendorRoutes);
 
 // ✅ MongoDB Connection + Start Server
 mongoose

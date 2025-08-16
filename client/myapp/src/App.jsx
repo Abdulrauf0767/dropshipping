@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute'; // Keep normal import for wrappers
 import BuyNowForSomeone from './pages/BuyNowForSomeone';
 import SellerInformation from './components/SellerInformation';
+import BecomeVendor from './pages/BecomeVendor';
+import AdminCategories from './pages/AdminCategories';
+import PendingVendors from './pages/PendingVendors';
 
 
 
@@ -24,6 +27,7 @@ const UserOrder = lazy(() => import('./pages/UserOrder'));
 const UserProfile = lazy(() => import('./pages/UserProfile'));
 const AdminUsers = lazy(() => import('./pages/AdminUsers'));
 const AdminDashboardLayout = lazy(() => import('./pages/AdminDashboardLayout'));
+const PendingVendorDetails = lazy(() => import('./pages/PendingVendorDetails'));
 const App = () => {
   return (
     <>
@@ -54,6 +58,7 @@ const App = () => {
             <Route path="usernotification" element={<UserNotification />} />
             <Route path="userorder" element={<UserOrder />} />
             <Route path="userprofile" element={<UserProfile />} />
+            <Route path="becomevendor" element={<BecomeVendor />} />
           </Route>
 
           {/* Vendor Protected Route */}
@@ -73,6 +78,9 @@ const App = () => {
               <Route path='dashboard' element={<AdminDashboard />} />
               <Route path="uploadproduct" element={<ProductUpload />} />
               <Route path="users" element={<AdminUsers />} />
+              <Route path="categories" element={<AdminCategories />} />
+              <Route path="pending-vendors" element={<PendingVendors />} />
+              <Route path="pending-vendors/:id" element={<PendingVendorDetails />} />
             </Route>
           </Route>
         </Routes>

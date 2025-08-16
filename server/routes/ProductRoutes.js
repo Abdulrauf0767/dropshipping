@@ -47,5 +47,6 @@ ProductRoutes.get('/search', ApiKeyMiddleware,verifyToken, ProductController.sea
 
 // GET by category
 ProductRoutes.get('/category', ApiKeyMiddleware,verifyToken, ProductController.getProductByCategory);
+ProductRoutes.get('/all-category', ApiKeyMiddleware,verifyToken,IsAdminOrVendor, ProductController.allCategoriesofProduct);
 
 module.exports = ProductRoutes;

@@ -40,7 +40,6 @@ export const getOrders = createAsyncThunk(
         }
     }
 )
-
 let BuyNowForMeSlice = createSlice({
     name: 'buyNowForMe',
     initialState: {
@@ -75,6 +74,7 @@ let BuyNowForMeSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+          
     }
 })
 export default BuyNowForMeSlice.reducer;
