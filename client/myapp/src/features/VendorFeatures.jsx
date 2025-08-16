@@ -193,6 +193,43 @@ export const pendingVendors = createAsyncThunk(
     }
 )
 
+export const allBlockedVendors = createAsyncThunk(
+    'vendor/allBlockedVendors',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axios.get(`${baseUrl}/all-blocked-vendors`, {
+                headers: {
+                    "apikey": import.meta.env.VITE_API_KEY,
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                withCredentials: true,
+            });
+            return response.data.vendors;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+)
+
+export const allrejectedVendors = createAsyncThunk(
+    'vendor/allrejectedVendors',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axios.get(`${baseUrl}/all-rejected-vendors`, {
+                headers: {
+                    "apikey": import.meta.env.VITE_API_KEY,
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                withCredentials: true,
+            });
+            return response.data.vendors;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+)
+
+
 const vendorSlice = createSlice({
     name: 'vendor',
     initialState: {
@@ -332,6 +369,30 @@ const vendorSlice = createSlice({
             state.list = action.payload.data;
         })
         .addCase(searchVendor.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+        .addCase(allBlockedVendors.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(allBlockedVendors.fulfilled, (state, action) => {
+            state.loading = false;
+            state.list = action.payload;
+        })
+        .addCase(allBlockedVendors.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+        .addCase(allrejectedVendors.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(allrejectedVendors.fulfilled, (state, action) => {
+            state.loading = false;
+            state.list = action.payload;
+        })
+        .addCase(allrejectedVendors.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload;
         })

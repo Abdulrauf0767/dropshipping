@@ -124,5 +124,21 @@ vendorRoutes.get(
   isAdmin,
   VendorController.searchVendors
 );
+// all blocked users
+vendorRoutes.get(
+  '/all-blocked-vendors',
+  apikeyMiddleware,
+  verifyToken,
+  isAdmin,
+  VendorController.getAllBlockedVendors
+);
+// all rejected users
+vendorRoutes.get(
+  '/all-rejected-vendors',
+  apikeyMiddleware,
+  verifyToken,
+  isAdmin,
+  VendorController.getallRejectedVendors
+);
 
 module.exports = vendorRoutes;

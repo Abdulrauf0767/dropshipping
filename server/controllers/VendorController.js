@@ -1,5 +1,6 @@
 let vendorModel = require("../models/Vendor.Model");
 let cloudinary = require("../utils/CloudinaryImage");
+let UserModel = require("../models/User.Model");
 
 const uploadToCloudinary = (fileBuffer, folder) =>
   new Promise((resolve, reject) => {
@@ -159,10 +160,11 @@ class VendorController {
       const vendorId = req.params.id;
       const vendor = await vendorModel.findById(vendorId);
       if (!vendor) return res.status(404).json({ message: "Vendor not found" });
-
+      const userRole = await UserModel.findByIdAndUpdate(vendor.user._id, { role: "vendor" });
       vendor.isVerified = true;
       vendor.status = "approved";
       await vendor.save();
+
 
       return res.status(200).json({ message: "Vendor approved successfully", vendor });
     } catch (error) {
@@ -273,6 +275,27 @@ class VendorController {
     return res.status(500).json({ message: "Internal server error" });
   }
 }
+
+async getAllBlockedVendors (req,res) {
+  try {
+    let vendors = await vendorModel.find({isBlocked : true}).populate("user", "name email");
+    return res.status(200).json({ vendors, message: "Blocked vendors fetched successfully" });
+  } catch (error) {
+    console.error("Error in getting all blocked vendors:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+async getallRejectedVendors (req,res) {
+  try {
+    let vendors = await vendorModel.find({status : "rejected"}).populate("user", "name email");
+    return res.status(200).json({ vendors, message: "Rejected vendors fetched successfully" });
+  } catch (error) {
+    console.error("Error in getting all rejected vendors:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 }
 
 module.exports = new VendorController();

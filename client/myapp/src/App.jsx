@@ -13,7 +13,6 @@ import PendingVendors from './pages/PendingVendors';
 const Login = lazy(() => import('./components/Login'));
 const Signup = lazy(() => import('./components/Signup'));
 const Home = lazy(() => import('./pages/Home'));
-const Seller = lazy(() => import('./pages/Seller'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const ProductUpload = lazy(() => import('./pages/ProductUpload'));
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
@@ -31,6 +30,7 @@ const PendingVendorDetails = lazy(() => import('./pages/PendingVendorDetails'));
 const Vendors = lazy(() => import('./pages/Vendors'));
 const RejectedVendors = lazy(() => import('./pages/RejectedVendors'));
 const BlockedVendors = lazy(() => import('./pages/BlockedVendors'));
+const Vendor = lazy(() => import('./pages/Vendor'));
 const App = () => {
   return (
     <>
@@ -65,14 +65,9 @@ const App = () => {
           </Route>
 
           {/* Vendor Protected Route */}
-          <Route
-            path="/vendor"
-            element={
-              <ProtectedRoute allowedRoles={['vendor']}>
-                <Seller />
-              </ProtectedRoute>
-            }
-          />
+          <Route element={<ProtectedRoute allowedRoles={['vendor']} />}>
+            <Route path="/vendor" element={<Vendor />} />
+          </Route>
 
           {/* Admin Protected Routes */}
           <Route element={<ProtectedRoute allowedRoles={['admin']} />}>

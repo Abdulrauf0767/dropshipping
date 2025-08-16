@@ -11,7 +11,11 @@ const PendingVendors = () => {
 
   useEffect(() => {
     if (status === "idle") {
-      dispatch(pendingVendors());
+      dispatch(pendingVendors()).unwrap().then(() => {
+        dispatch(pendingVendors());
+      }).catch ((error) => {
+        alert(error.message);
+      })
     }
   }, [dispatch, status]);
 

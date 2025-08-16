@@ -31,7 +31,7 @@ const handleSearch = (e) => {
     });
 };
 const handleDelete = (id) => {
-  dispatch(deleteVendor(id))
+ dispatch(deleteVendor(id))
     .unwrap()
     .then(() => {
       dispatch(allVendors());
