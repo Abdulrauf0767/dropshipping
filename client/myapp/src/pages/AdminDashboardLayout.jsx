@@ -14,6 +14,7 @@ import {
   FaceRetouchingOffOutlined,
   KeyboardArrowDownOutlined,
   KeyboardArrowUpOutlined,
+  LocalOffer,
   LogoutOutlined,
   PendingOutlined,
   StorefrontOutlined,
@@ -44,6 +45,7 @@ const AdminDashboardLayout = () => {
     { icon: FiPlusSquare, text: "Add Product", link: "/admin/uploadproduct" },
     { icon: FiGrid, text: "Categories", link: "/admin/categories" },
     { icon: FiCheck, text: "All Products", link: "/admin/all-products" },
+    { icon: LocalOffer, text: "Your Products", link: "/admin/itself-products" },
   ];
 
   return (

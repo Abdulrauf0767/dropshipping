@@ -1,5 +1,6 @@
 let productModel = require('../models/Product.Model');
 let cloudinary = require('../utils/CloudinaryImage');
+let UserModel = require('../models/User.Model');
 
 class productController {
     // ✅ CREATE PRODUCT
@@ -122,11 +123,26 @@ async createProduct(req, res) {
 // ✅ UPDATE PRODUCT
 async updateProductById(req, res) {
     try {
-        let updateData = { ...req.body };
-        let userId = req.user._id;
+        const productId = req.params.id;
+        const userId = req.user._id;
 
-        let images = [];
+        // 1️⃣ Find the product
+        let product = await productModel.findById(productId);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        // 2️⃣ Check if the logged-in user is owner
+        if (product.userId.toString() !== userId.toString()) {
+            return res.status(403).json({ message: 'You are not allowed to update this product' });
+        }
+
+        // 3️⃣ Prepare update data
+        const updateData = { ...req.body };
+
+        // 4️⃣ Handle new images if uploaded
         if (req.files && req.files.length > 0) {
+            const images = [];
             for (const file of req.files) {
                 const uploadResult = await new Promise((resolve, reject) => {
                     cloudinary.uploader.upload_stream(
@@ -148,13 +164,18 @@ async updateProductById(req, res) {
                 });
             }
 
-            updateData.image = images;
+            // Append new images to existing ones
+            updateData.image = [...product.image, ...images];
         }
 
-        let product = await productModel.findByIdAndUpdate(req.params.id, updateData,userId, { new: true });
-        if (!product) return res.status(404).json({ message: 'Product not found' });
+        // 5️⃣ Update the product
+        Object.assign(product, updateData);
+        await product.save();
 
-        return res.status(200).json({ message: 'Product updated successfully', product });
+        return res.status(200).json({
+            message: 'Product updated successfully',
+            product
+        });
 
     } catch (error) {
         console.error(error);
@@ -184,7 +205,7 @@ async updateProductById(req, res) {
 
             let skip = (page - 1) * limit;
             let total = await productModel.countDocuments(searchCriteria);
-            let products = await productModel.find(searchCriteria).skip(skip).limit(limit);
+            let products = await productModel.find(searchCriteria).skip(skip).limit(limit).populate("userId", "name email role");
 
             return res.status(200).json({
                 message: 'Products fetched successfully',
@@ -247,7 +268,7 @@ async updateProductById(req, res) {
             let page = parseInt(req.query.page) || 1;
             let skip = (page - 1) * limit;
             let total = await productModel.countDocuments();
-            let products = await productModel.find().skip(skip).limit(limit).populate("user", "name email");
+            let products = await productModel.find().skip(skip).limit(limit).populate("userId", "name email role"); 
             return res.status(200).json({ message: 'Products fetched successfully', products, page, limit, total });
         } catch (error) {
             console.error(error);
@@ -261,14 +282,88 @@ async updateProductById(req, res) {
             let limit = parseInt(req.query.limit) || 10;
             let page = parseInt(req.query.page) || 1;
             let skip = (page - 1) * limit;
-            let total = await productModel.countDocuments({ user: userId });
-            let products = await productModel.find({ user: userId }).skip(skip).limit(limit);
+            let total = await productModel.countDocuments({ userId: userId });
+            let products = await productModel.find({ userId: userId }).skip(skip).limit(limit);
             return res.status(200).json({ message: 'Products fetched successfully', products, page, limit, total });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ message: 'Something went wrong', error: error.message });
         }
     }
+
+    async makingProductInactive (req,res) {
+        try {
+            let productId = req.params.id;
+            let product = await productModel.findById(productId);
+            if (!product) {
+                return res.status(404).json({ message: 'Product not found' });
+            }
+            product.isActive = false;
+            await product.save();
+            return res.status(200).json({ message: 'Product made inactive successfully',product });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Something went wrong', error: error.message });
+        }
+    } 
+
+    async finishDiscount (req,res) {
+        try {
+            let productId = req.params.id;
+            let product = await productModel.findById(productId);
+            if (!product) {
+                return res.status(404).json({ message: 'Product not found' });
+            }
+            product.discountPrice = 0;
+            await product.save();
+            return res.status(200).json({ message: 'Discount finished successfully' ,product});
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Something went wrong', error: error.message });
+        }
+    }
+
+  async addDiscount(req, res) {
+    try {
+        let productId = req.params.id;
+        let { discountPrice } = req.body;
+
+        let product = await productModel.findByIdAndUpdate(
+            productId,
+            { discountPrice },
+            { new: true } // updated document return karega
+        );
+
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        return res.status(200).json({
+            message: 'Discount added successfully',
+            product
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Something went wrong', error: error.message });
+    }
+}
+
+async makeProductActive (req,res) {
+    try {
+        let productId = req.params.id;
+        let product = await productModel.findById(productId);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        product.isActive = true;
+        await product.save();
+        return res.status(200).json({ message: 'Product made active successfully',product });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Something went wrong', error: error.message });
+    }
+}
 
 }
 

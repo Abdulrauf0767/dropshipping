@@ -51,4 +51,16 @@ ProductRoutes.get('/all-category', ApiKeyMiddleware,verifyToken,IsAdminOrVendor,
 ProductRoutes.get('/all-product', ApiKeyMiddleware,verifyToken,IsAdmin, ProductController.allProductDataAdmin);
 ProductRoutes.get('/user-product', ApiKeyMiddleware,verifyToken, IsAdminOrVendor,ProductController.getProductByUser);
 
+// inactive product
+ProductRoutes.patch('/inactive/:id', ApiKeyMiddleware, verifyToken, IsAdmin, ProductController.makingProductInactive);
+
+// finish discount
+ProductRoutes.patch('/finish-discount/:id', ApiKeyMiddleware, verifyToken, IsAdminOrVendor, ProductController.finishDiscount);
+
+// add discount
+ProductRoutes.patch('/add-discount/:id', ApiKeyMiddleware, verifyToken, IsAdminOrVendor, ProductController.addDiscount);
+
+// active product
+ProductRoutes.patch('/active/:id', ApiKeyMiddleware, verifyToken, IsAdmin, ProductController.makeProductActive);
+
 module.exports = ProductRoutes;

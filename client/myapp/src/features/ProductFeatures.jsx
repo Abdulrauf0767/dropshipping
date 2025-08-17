@@ -129,13 +129,126 @@ export const productByUser = createAsyncThunk(
             },
             withCredentials: true
         });
-        return res.data.products;
+        return res.data;
     } catch (error) {
         return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 )
 
+export const makeProductInactive = createAsyncThunk(
+  'product/inactive',
+  async (id, {rejectWithValue}) => {
+    try {
+        const res = await axios.patch(`http://localhost:5001/api/product/inactive/${id}`,{}, {
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": import.meta.env.VITE_API_KEY,
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            withCredentials: true
+        });
+        return res.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+)
+
+export const finishDiscount = createAsyncThunk(
+  'product/finishdiscount',
+  async (id, {rejectWithValue}) => {
+    try {
+        const res = await axios.patch(`http://localhost:5001/api/product/finish-discount/${id}`,{}, {
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": import.meta.env.VITE_API_KEY,
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            withCredentials: true
+        });
+        return res.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+)
+
+export const addDiscount = createAsyncThunk(
+  'product/adddiscount',
+  async ({id, discountPrice}, {rejectWithValue}) => {
+    try {
+        const res = await axios.patch(`http://localhost:5001/api/product/add-discount/${id}`, {discountPrice}, {
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": import.meta.env.VITE_API_KEY,
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            withCredentials: true
+        });
+        return res.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+)
+
+export const makeProductactive = createAsyncThunk(
+  'product/active',
+  async (id, {rejectWithValue}) => {
+    try {
+        const res = await axios.patch(`http://localhost:5001/api/product/active/${id}`,{}, {
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": import.meta.env.VITE_API_KEY,
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            withCredentials: true
+        });
+        return res.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+)
+
+export const updateProduct = createAsyncThunk(
+  'product/update',
+  async ({id, data}, {rejectWithValue}) => {
+    try {
+        const res = await axios.patch(`http://localhost:5001/api/product/update/${id}`, data, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                "apikey": import.meta.env.VITE_API_KEY,
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            withCredentials: true
+        });
+        return res.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+)
+
+export const deleteProduct = createAsyncThunk(
+  'product/delete',
+  async (id, {rejectWithValue}) => {
+    try {
+        const res = await axios.delete(`http://localhost:5001/api/product/deletebyid/${id}`, {
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": import.meta.env.VITE_API_KEY,
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            withCredentials: true
+        });
+        return res.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+)
 
 const ProductSlice = createSlice({
   name: 'product',
@@ -225,9 +338,81 @@ const ProductSlice = createSlice({
       })
       .addCase(productByUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.list = action.payload;
+        state.list = action.payload.products;
       })
       .addCase(productByUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(makeProductInactive.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(makeProductInactive.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.list = action.payload.product;
+      })
+      .addCase(makeProductInactive.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(finishDiscount.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(finishDiscount.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.list = action.payload.product;
+      })
+      .addCase(finishDiscount.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(addDiscount.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(addDiscount.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.list = action.payload.product;
+      })
+      .addCase(addDiscount.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(makeProductactive.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(makeProductactive.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.list = action.payload.product;
+      })
+      .addCase(makeProductactive.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(deleteProduct.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.list = action.payload;
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(updateProduct.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(updateProduct.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.list = action.payload;
+      })
+      .addCase(updateProduct.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload || action.error.message;
       });

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { uploadProduct } from '../features/ProductFeatures';
 
 const MAX_IMAGES = 5;
+const MAX_IMAGE_SIZE_MB = 10; // 10 MB
 
 const ProductUpload = () => {
   const dispatch = useDispatch();
@@ -60,6 +61,13 @@ const ProductUpload = () => {
             if (!file.type.startsWith('image/')) return false;
           }
           return true;
+        })
+        .test('fileSize', `Each image must be less than ${MAX_IMAGE_SIZE_MB}MB`, (files) => {
+          if (!files) return false;
+          for (let file of files) {
+            if (file.size / 1024 / 1024 > MAX_IMAGE_SIZE_MB) return false;
+          }
+          return true;
         }),
       tags: Yup.string().required('Tags are required'),
     }),
@@ -107,6 +115,7 @@ const ProductUpload = () => {
 
     let newImages = [...formik.values.image, ...files];
 
+    // Remove duplicate images
     newImages = newImages.filter(
       (file, index, self) =>
         index ===
@@ -115,9 +124,18 @@ const ProductUpload = () => {
         )
     );
 
+    // Check max images
     if (newImages.length > MAX_IMAGES) {
       alert(`You can only upload up to ${MAX_IMAGES} images`);
       return;
+    }
+
+    // Check each image size
+    for (let file of newImages) {
+      if (file.size / 1024 / 1024 > MAX_IMAGE_SIZE_MB) {
+        alert(`Image "${file.name}" exceeds ${MAX_IMAGE_SIZE_MB}MB`);
+        return;
+      }
     }
 
     formik.setFieldValue('image', newImages);
@@ -265,7 +283,7 @@ const ProductUpload = () => {
           {formik.touched.sizes && formik.errors.sizes && <p className="text-red-600">{formik.errors.sizes}</p>}
 
           {/* Images */}
-          <label htmlFor="image" className="text-lg font-lisuBusa">Product Image (1 to 5)</label>
+          <label htmlFor="image" className="text-lg font-lisuBusa">Product Image (1 to 5, max 10MB each)</label>
           <input
             id="image"
             name="image"

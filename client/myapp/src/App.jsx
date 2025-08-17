@@ -32,6 +32,7 @@ const RejectedVendors = lazy(() => import('./pages/RejectedVendors'));
 const BlockedVendors = lazy(() => import('./pages/BlockedVendors'));
 const Vendor = lazy(() => import('./pages/Vendor'));
 const AdminProducts = lazy(() => import('./pages/AdminProducts'));
+const AdminItselfProducts = lazy(() => import('./pages/AdminItselfProducts'));
 
 const App = () => {
   return (
@@ -85,6 +86,7 @@ const App = () => {
               <Route path="rejected-vendors" element={<RejectedVendors />} />
               <Route path="blocked-vendors" element={<BlockedVendors />} />
               <Route path="all-products" element={<AdminProducts />} />
+              <Route path="itself-products" element={<AdminItselfProducts />} />
             </Route>
           </Route>
         </Routes>
