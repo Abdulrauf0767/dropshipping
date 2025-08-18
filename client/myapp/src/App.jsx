@@ -6,6 +6,8 @@ import SellerInformation from './components/SellerInformation';
 import BecomeVendor from './pages/BecomeVendor';
 import AdminCategories from './pages/AdminCategories';
 import PendingVendors from './pages/PendingVendors';
+import ProceedtoMe from './pages/ProceedtoMe';
+import ProceedToSomeone from './pages/ProceedToSomeone';
 
 
 
@@ -65,6 +67,8 @@ const App = () => {
             <Route path="userorder" element={<UserOrder />} />
             <Route path="userprofile" element={<UserProfile />} />
             <Route path="becomevendor" element={<BecomeVendor />} />
+            <Route path="proceed-to-me/:id" element={<ProceedtoMe />} />
+            <Route path="proceed-to-someone/:id" element={<ProceedToSomeone />} />
           </Route>
 
           {/* Vendor Protected Route */}
