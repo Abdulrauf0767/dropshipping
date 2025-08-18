@@ -3,23 +3,25 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   getCart,
   removeProductFromCart,
-  updateProductQuantity, // import this
+  updateProductQuantity,
 } from "../features/CartFeatures";
 import Header from "../components/Header";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
-  const { list, status, error } = useSelector((state) => state.cart);
+  const { cart, status, error } = useSelector((state) => state.cart); // ✅ ab cart use ho raha hai
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(getCart());
   }, [dispatch]);
 
   const calculateTotal = () =>
-    list.reduce(
+    cart?.products?.reduce(
       (total, item) => total + (item.product?.price || 0) * item.quantity,
       0
-    );
+    ) || 0;
 
   return (
     <div>
@@ -30,7 +32,7 @@ const Cart = () => {
         {status === "loading" && <p className="text-center">Loading cart...</p>}
         {error && <p className="text-center text-red-500">{error}</p>}
 
-        {list.length === 0 && status !== "loading" ? (
+        {!cart?.products?.length && status !== "loading" ? (
           <div className="text-center py-12">
             <h2 className="text-2xl font-semibold text-gray-600 mb-4">
               Your cart is empty
@@ -42,7 +44,7 @@ const Cart = () => {
             {/* Cart Items */}
             <div className="lg:w-3/4">
               <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                {list.map((item) => {
+                {cart?.products?.map((item) => {
                   const product = item.product || {};
                   const imageUrl =
                     product.image && product.image.length > 0
@@ -101,7 +103,9 @@ const Cart = () => {
                           >
                             -
                           </button>
-                          <span className="bg-gray-100 px-4 py-1">{item.quantity}</span>
+                          <span className="bg-gray-100 px-4 py-1">
+                            {item.quantity}
+                          </span>
                           <button
                             onClick={() =>
                               dispatch(
@@ -143,7 +147,10 @@ const Cart = () => {
                   <span>Total</span>
                   <span>Rs. {calculateTotal()}</span>
                 </div>
-                <button className="w-full mt-6 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-200">
+                <button
+                  onClick={() => navigate(`/home/choose-order/${cart._id}?type=proceed`)} // ✅ cartId pass
+                  className="w-full mt-6 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-200"
+                >
                   Proceed to Checkout
                 </button>
               </div>

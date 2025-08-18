@@ -9,4 +9,5 @@ CartRoutes.post('/add/:id', ApiKeyMiddleware, verifyToken, IsBlocked, CartContro
 CartRoutes.get('/all', ApiKeyMiddleware, verifyToken, IsBlocked, CartController.getCart);
 CartRoutes.delete('/remove/:id', ApiKeyMiddleware, verifyToken, IsBlocked, CartController.removeFromCart);
 CartRoutes.put('/update/:id', ApiKeyMiddleware, verifyToken, IsBlocked, CartController.updateQuantity);
+CartRoutes.get('/get/:id', ApiKeyMiddleware, verifyToken, IsBlocked, CartController.getCartDatabyId);
 module.exports = CartRoutes

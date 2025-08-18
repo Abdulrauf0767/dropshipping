@@ -23,7 +23,7 @@ const Header = () => {
 
   const dispatch = useDispatch();
   const wishProducts = useSelector((state) => state.wishlist.items);
-  const cartProducts = useSelector((state) => state.cart.list);
+  const cartProducts = useSelector((state) => state.cart.cart) || [];
   const notifications = useSelector((state) => state.notification.notifications);
   const user = useSelector((state) => state.user.profile);
   const navigate = useNavigate();

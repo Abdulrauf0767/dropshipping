@@ -1,6 +1,6 @@
 const CartModel = require('../models/Cart.Model');
 const ProductModel = require('../models/Product.Model');
-
+const mongoose = require('mongoose');
 class CartController {
   // Add product to cart (if exists, increase quantity by 1)
   async addToCart(req, res) {
@@ -137,6 +137,32 @@ class CartController {
       res.status(500).json({ message: 'Something went wrong' });
     }
   }
+
+async getCartDatabyId(req, res) {
+  try {
+    const { id } = req.params;
+
+    // Validate ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid cart ID" });
+    }
+
+    const cart = await CartModel.findById(id)
+      .populate("products.product", "name price image userId") // ✅ nested populate
+      .populate("user", "name email"); // ✅ also populate user
+
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Cart fetched successfully", cart });
+  } catch (error) {
+    console.error("Error in getCartDatabyId:", error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+}
 }
 
 module.exports = new CartController();

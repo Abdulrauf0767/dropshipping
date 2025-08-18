@@ -7,6 +7,7 @@ import BuyNowForMeSlice from '../features/BuyNowForMeFeatures';
 import notificationSlice from '../features/NotificationFeature';
 import sellerSlice from '../features/SellerFeature';
 import VendorSlice from '../features/VendorFeatures';
+import ProceedTockeckout from '../features/ProceedTocheckoutFeature';
  const Store = configureStore({
     reducer: {
         user: UserSlice,
@@ -16,7 +17,8 @@ import VendorSlice from '../features/VendorFeatures';
         buyNowForMe: BuyNowForMeSlice,
         notification : notificationSlice,
         seller : sellerSlice,
-        vendor : VendorSlice
+        vendor : VendorSlice,
+        proceed : ProceedTockeckout
     }
 })
 

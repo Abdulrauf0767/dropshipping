@@ -7,7 +7,6 @@ const BaseUrl = "http://localhost:5001/api/cart";
 export const addProductToCart = createAsyncThunk(
   "cart/addProducts",
   async (payload, { rejectWithValue }) => {
-    // payload can be productId string OR { productId, quantity }
     const { productId, quantity } =
       typeof payload === "string"
         ? { productId: payload, quantity: 1 }
@@ -26,7 +25,7 @@ export const addProductToCart = createAsyncThunk(
           withCredentials: true,
         }
       );
-      return res.data; // API returns full cart with products array
+      return res.data; // API should return full cart object
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || error.message || "Something went wrong"
@@ -48,7 +47,7 @@ export const getCart = createAsyncThunk(
         },
         withCredentials: true,
       });
-      return res.data;
+      return res.data; // full cart
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || error.message || "Something went wrong"
@@ -70,7 +69,7 @@ export const removeProductFromCart = createAsyncThunk(
         },
         withCredentials: true,
       });
-      return res.data;
+      return res.data; // full cart after removal
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || error.message || "Something went wrong"
@@ -96,7 +95,7 @@ export const updateProductQuantity = createAsyncThunk(
           withCredentials: true,
         }
       );
-      return res.data; // updated cart object
+      return res.data; // full updated cart
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || error.message || "Something went wrong"
@@ -105,11 +104,32 @@ export const updateProductQuantity = createAsyncThunk(
   }
 );
 
+export const getCartbyId = createAsyncThunk(
+  'cart/getCartbyId',
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(`${BaseUrl}/get/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_API_KEY,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        withCredentials: true,
+      });
+      return res.data; // full updated cart
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || "Something went wrong"
+      );
+    }
+  }
+)
+
 const CartSlice = createSlice({
   name: "cart",
   initialState: {
-    list: [], // array of cart products with quantity and product info
-    status: "idle", // idle | loading | succeeded | failed
+    cart: null,   // ✅ pura cart object store hoga
+    status: "idle",
     error: null,
   },
   reducers: {},
@@ -121,8 +141,7 @@ const CartSlice = createSlice({
       })
       .addCase(addProductToCart.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.list = action.payload.cart.products || action.payload.products; 
-        // Some APIs respond with cart or products directly; adjust accordingly
+        state.cart = action.payload.cart || action.payload; // ✅ pura cart save
       })
       .addCase(addProductToCart.rejected, (state, action) => {
         state.status = "failed";
@@ -135,7 +154,7 @@ const CartSlice = createSlice({
       })
       .addCase(getCart.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.list = action.payload.cart?.products || action.payload.products;
+        state.cart = action.payload.cart || action.payload;
       })
       .addCase(getCart.rejected, (state, action) => {
         state.status = "failed";
@@ -148,7 +167,7 @@ const CartSlice = createSlice({
       })
       .addCase(removeProductFromCart.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.list = action.payload.cart?.products || action.payload.products;
+        state.cart = action.payload.cart || action.payload;
       })
       .addCase(removeProductFromCart.rejected, (state, action) => {
         state.status = "failed";
@@ -161,9 +180,20 @@ const CartSlice = createSlice({
       })
       .addCase(updateProductQuantity.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.list = action.payload.cart?.products || action.payload.products;
+        state.cart = action.payload.cart || action.payload;
       })
       .addCase(updateProductQuantity.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(getCartbyId.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getCartbyId.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.cart = action.payload.cart || action.payload;
+      })
+      .addCase(getCartbyId.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });

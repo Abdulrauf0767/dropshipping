@@ -53,7 +53,7 @@ const ProductDetail = () => {
   };
 
   const handleBuyNow = () => {
-    navigate(`/home/choose-order/${id}`);
+    navigate(`/home/choose-order/${id}?type=buynow`);
   };
 
   const addToCart = () => {
