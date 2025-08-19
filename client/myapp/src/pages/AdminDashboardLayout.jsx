@@ -39,6 +39,8 @@ const AdminDashboardLayout = () => {
     { icon: PendingOutlined, text: " Pending Vendors", link: "/admin/pending-vendors" },
     { icon: BlockOutlined, text: " Blocked Vendors", link: "/admin/blocked-vendors" },
     { icon: FaceRetouchingOffOutlined, text: " Rejected Vendors", link: "/admin/rejected-vendors" },
+    { icon: LocalOffer, text: " All Orders", link: "/admin/all-orders" },
+    { icon: LocalOffer, text: " Your Orders", link: "/admin/your-orders" },
   ];
 
   const productSubmenu = [
@@ -53,7 +55,7 @@ const AdminDashboardLayout = () => {
       {/* Sidebar */}
       <div
         className={`bg-white shadow-lg transition-all duration-300 ease-in-out
-          ${open ? "w-60" : "w-16"} h-screen fixed top-0 left-0`}
+          ${open ? "w-60" : "w-16"} h-screen overflow-y-auto scrollbar-none fixed top-0 left-0`}
       >
         {/* Sidebar Header */}
         <div className="flex items-center justify-between p-3 border-b">

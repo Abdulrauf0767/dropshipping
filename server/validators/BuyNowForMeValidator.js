@@ -3,6 +3,7 @@ let {check} = require('express-validator') ;
 let BuyNowForMeValidator = [
     check('userName').notEmpty().withMessage('Name is required').escape(),
     check('email').isEmail().withMessage('Invalid email').escape(),
+    check('marginPrice').optional({ checkFalsy: true }).isNumeric().withMessage('Margin price must be a number').escape().isFloat({gt : 0}).withMessage('Margin price must be greater than 0'),
     check('phone').isMobilePhone().withMessage('Invalid phone number').escape(),
     check('price').isNumeric().withMessage('Price must be a number').escape().isFloat({gt : 0}).withMessage('Price must be greater than 0'),
     check('address').notEmpty().withMessage('Address is required').escape(),

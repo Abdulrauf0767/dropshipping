@@ -13,6 +13,11 @@ let buynowForMeSchema = new mongoose.Schema({
             required : true
         }
     ],
+    vendor :{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'User',
+        required : true
+    },
     userName : {
         type : String,
         required : true
@@ -28,6 +33,9 @@ let buynowForMeSchema = new mongoose.Schema({
     price : {
         type : Number,
         required : true
+    },
+    marginPrice : {
+        type : Number,
     },
     address :{
         type : String,

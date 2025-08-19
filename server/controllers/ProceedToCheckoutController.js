@@ -92,16 +92,17 @@ class ProceedTocheckoutController {
     // GET USER ORDERS
     async getMyOrders(req, res) {
         try {
-            let orders = await ProceedTocheckoutModel.find({ user: req.user._id })
-                .populate("products.product")
-                .populate("products.vendor", "name email role") // ✅ vendor details
-                .sort({ createdAt: -1 });
+    let orders = await ProceedTocheckoutModel.find({ "products.vendor": req.user._id })
+      .populate("user", "name email role") // jis user ne order place kiya
+      .populate("products.product")        // product detail
+      .populate("products.vendor", "name email role") // vendor/admin detail
+      .sort({ createdAt: -1 });
 
-            res.status(200).json(orders);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: "Something went wrong" });
-        }
+    res.status(200).json({ message: "User orders fetched successfully", orders });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
     }
 
     // GET ALL ORDERS
@@ -122,21 +123,30 @@ class ProceedTocheckoutController {
 
     // UPDATE ORDER STATUS
     async updateOrderStatus(req, res) {
-        try {
-            let { orderId } = req.params;
-            let { status } = req.body;
+     try {
+    const { orderId } = req.params;
+    const { status } = req.body;
 
-            let order = await ProceedTocheckoutModel.findById(orderId);
-            if (!order) return res.status(404).json({ message: "Order not found" });
+    const order = await ProceedTocheckoutModel.findById(orderId)
+      .populate("products.product", "name image price description") // populate product details
+      .populate("user", "name email phone"); // optional: populate user details
 
-            order.orderStatus = status;
-            await order.save();
+    if (!order) return res.status(404).json({ message: "Order not found" });
 
-            res.status(200).json({ message: `Order status updated to ${status}`, order });
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: "Something went wrong" });
-        }
+    // Check for valid status
+    const validStatus = ["pending", "processing", "shipped", "delivered", "cancelled"];
+    if (!validStatus.includes(status)) {
+      return res.status(400).json({ message: "Invalid order status" });
+    }
+
+    order.orderStatus = status;
+    await order.save();
+
+    res.status(200).json({ message: "Order status updated", order });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
     }
 
     // REJECT ORDER

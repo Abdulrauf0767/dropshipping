@@ -34,7 +34,7 @@ const ChooseOrder = () => {
       if (type === "proceed") {
         navigate(`/home/proceed-to-someone/${id}`);
       } else {
-        navigate(`/home/buy-now-for-me/${id}`);
+        navigate(`/home/buy-now-for-someone/${id}`);
       }
     } else {
       navigate(`/home/seller-information/${id}`);

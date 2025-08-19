@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
-import { createOrder } from '../features/BuyNowForMeFeatures'; // adjust path if needed
+import { createOrder, createOrderForSomeone } from '../features/BuyNowForMeFeatures'; // adjust path if needed
 import { useParams } from 'react-router-dom';
 
 const BuyNowForSomeone = () => {
@@ -84,7 +84,7 @@ const BuyNowForSomeone = () => {
         ...values,
         productId: id, // Important fix: send productId with the value from URL param 'id'
       };
-      dispatch(createOrder(orderData));
+      dispatch(createOrderForSomeone(orderData));
       resetForm();
     },
   });

@@ -14,6 +14,6 @@ ProceedToCheckoutRoutes.post('/add-product-someone', ApiKeyMiddleware, verifyTok
 ProceedToCheckoutRoutes.get('/user-order', ApiKeyMiddleware, verifyToken, isBlocked, isAdminOrVendor,ProceedToCheckoutController.getMyOrders);
 ProceedToCheckoutRoutes.get('/all-order', ApiKeyMiddleware, verifyToken, isBlocked, isAdmin, ProceedToCheckoutController.getAllOrders);
 ProceedToCheckoutRoutes.patch('/update-status/:orderId', ApiKeyMiddleware, verifyToken, isBlocked, isAdmin, ProceedToCheckoutController.updateOrderStatus);
-ProceedToCheckoutRoutes.patch('/reject-order/:orderId', ApiKeyMiddleware, verifyToken, isBlocked, isAdmin, ProceedToCheckoutController.rejectOrder);
+ProceedToCheckoutRoutes.delete('/reject-order/:orderId', ApiKeyMiddleware, verifyToken, isBlocked, isAdmin, ProceedToCheckoutController.rejectOrder);
 module.exports = ProceedToCheckoutRoutes
 
