@@ -172,6 +172,63 @@ export const searchUsers = createAsyncThunk(
   }
 );
 
+export const allusersCount = createAsyncThunk(
+    'users/all users count',
+    async (_,{rejectWithValue}) => {
+        try {
+            let res = await axios.get('http://localhost:5001/api/user/all-user-count',{
+                headers : {
+                    "Content-Type" : "application/json",
+                    "apikey" : import.meta.env.VITE_API_KEY,
+                    Authorization : `Bearer ${localStorage.getItem('token')}`
+                },
+                withCredentials : true
+            })
+            return res.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data)
+        }
+    }
+)
+
+export const sellerCount = createAsyncThunk(
+    'users/seller count',
+    async (_,{rejectWithValue}) => {
+        try {
+            let res = await axios.get('http://localhost:5001/api/user/sellers-count',{
+                headers : {
+                    "Content-Type" : "application/json",
+                    "apikey" : import.meta.env.VITE_API_KEY,
+                    Authorization : `Bearer ${localStorage.getItem('token')}`
+                },
+                withCredentials : true
+            })
+            return res.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data)
+        }
+    }
+)
+
+export const vendorsCount = createAsyncThunk(
+    'users/vendors count',
+    async (_,{rejectWithValue}) => {
+        try {
+            let res = await axios.get('http://localhost:5001/api/user/vendors-count',{
+                headers : {
+                    "Content-Type" : "application/json",
+                    "apikey" : import.meta.env.VITE_API_KEY,
+                    Authorization : `Bearer ${localStorage.getItem('token')}`
+                },
+                withCredentials : true
+            })
+            return res.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data)
+        }
+    }
+)
+
 const UserSlice = createSlice({
     name: 'user',
     initialState: {
@@ -179,7 +236,8 @@ const UserSlice = createSlice({
         user: null,
         error: '',
         profile : [],
-        alluser :[]
+        alluser :[],
+        total : null,
     },
 
     extraReducers: (builder) => {
@@ -306,6 +364,39 @@ const UserSlice = createSlice({
                 );
             })
             .addCase(blockUser.rejected,(state,action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(allusersCount.pending,(state,action) => {
+                state.status = 'loading';
+            })
+            .addCase(allusersCount.fulfilled,(state,action) => {
+                state.status = 'succeeded';
+                state.total = action.payload.total;
+            })
+            .addCase(allusersCount.rejected,(state,action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(sellerCount.pending,(state,action) => {
+                state.status = 'loading';
+            })
+            .addCase(sellerCount.fulfilled,(state,action) => {
+                state.status = 'succeeded';
+                state.total = action.payload.total;
+            })
+            .addCase(sellerCount.rejected,(state,action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(vendorsCount.pending,(state,action) => {
+                state.status = 'loading';
+            })
+            .addCase(vendorsCount.fulfilled,(state,action) => {
+                state.status = 'succeeded';
+                state.total = action.payload.total;
+            })
+            .addCase(vendorsCount.rejected,(state,action) => {
                 state.status = 'failed';
                 state.error = action.error.message;
             })

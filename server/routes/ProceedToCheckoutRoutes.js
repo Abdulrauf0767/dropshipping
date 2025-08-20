@@ -15,5 +15,8 @@ ProceedToCheckoutRoutes.get('/user-order', ApiKeyMiddleware, verifyToken, isBloc
 ProceedToCheckoutRoutes.get('/all-order', ApiKeyMiddleware, verifyToken, isBlocked, isAdmin, ProceedToCheckoutController.getAllOrders);
 ProceedToCheckoutRoutes.patch('/update-status/:orderId', ApiKeyMiddleware, verifyToken, isBlocked, isAdmin, ProceedToCheckoutController.updateOrderStatus);
 ProceedToCheckoutRoutes.delete('/reject-order/:orderId', ApiKeyMiddleware, verifyToken, isBlocked, isAdmin, ProceedToCheckoutController.rejectOrder);
+ProceedToCheckoutRoutes.get('/get-seller-margin', ApiKeyMiddleware, verifyToken, isBlocked,  ProceedToCheckoutController.getSellerMargin);
+ProceedToCheckoutRoutes.get('/total-sales-for-admin', ApiKeyMiddleware, verifyToken, isBlocked,  isAdmin, ProceedToCheckoutController.TotalSalesForAdmin);
+ProceedToCheckoutRoutes.get('/get-monthly-graph-admin', ApiKeyMiddleware, verifyToken, isBlocked,  isAdmin, ProceedToCheckoutController.getmonthlyGraphAdmin);
 module.exports = ProceedToCheckoutRoutes
 

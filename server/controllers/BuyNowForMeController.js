@@ -3,6 +3,7 @@ const UserModel = require('../models/User.Model');
 const ProductModel = require('../models/Product.Model');
 const NotificationModel = require('../models/Notification.Model');
 const mongoose = require('mongoose');
+const BuyNowForMeModel = require('../models/BuyNowForMe.Model');
 
 class BuyNowForMeController {
 
@@ -34,7 +35,7 @@ class BuyNowForMeController {
       if (!product) return res.status(404).json({ message: 'Product not found' });
 
       // Create order with vendor from product
-      const order = await BuynowformeModel.create({
+      const order = await BuyNowForMeModel.create({
         user: user._id,
         vendor: product.userId, // vendor field automatically set
         products: [product._id],
@@ -103,7 +104,7 @@ class BuyNowForMeController {
       if (!product) return res.status(404).json({ message: 'Product not found' });
 
       // Create order with vendor from product
-      const order = await BuynowformeModel.create({
+      const order = await BuyNowForMeModel.create({
         user: user._id,
         vendor: product.userId,
         products: [product._id],
@@ -150,7 +151,7 @@ class BuyNowForMeController {
     const userId = req.user._id;
 
     // Login user ke liye un orders ko fetch karna jahan wo vendor hai
-    const orders = await BuynowformeModel.find({ vendor: userId })
+    const orders = await BuyNowForMeModel.find({ vendor: userId })
       .populate('products', 'name price image description ')
       .populate('vendor', 'name email')
       .populate('user', 'name email') // order kisne kiya hai
@@ -166,7 +167,7 @@ class BuyNowForMeController {
   // ================= GET ALL ORDERS (ADMIN) =================
   async getAllOrders(req, res) {
     try {
-      const orders = await BuynowformeModel.find({})
+      const orders = await BuyNowForMeModel.find({})
         .populate('products', 'name price image')
         .populate('user', 'name email')
         .populate('vendor', 'name email')
@@ -183,7 +184,7 @@ class BuyNowForMeController {
   async deleteOrder(req, res) {
     try {
       const orderId = req.params.id;
-      const order = await BuynowformeModel.findByIdAndDelete(orderId);
+      const order = await BuyNowForMeModel.findByIdAndDelete(orderId);
       if (!order) return res.status(404).json({ message: 'Order not found' });
       return res.status(200).json({ message: 'Order deleted successfully', order });
     } catch (error) {
@@ -203,7 +204,7 @@ class BuyNowForMeController {
       const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
       if (!validStatuses.includes(orderStatus)) return res.status(400).json({ message: 'Invalid order status' });
 
-      const order = await BuynowformeModel.findById(orderId);
+      const order = await BuyNowForMeModel.findById(orderId);
       if (!order) return res.status(404).json({ message: 'Order not found' });
 
       const wasDelivered = order.orderStatus === 'delivered';
@@ -228,6 +229,115 @@ class BuyNowForMeController {
       return res.status(500).json({ message: 'Something went wrong', error: error.message });
     }
   }
+
+ async getSellerMarginData(req, res) {
+     try {
+    const sellerId = req.user._id;
+
+    const marginData = await BuyNowForMeModel.aggregate([
+      {
+        $match: {
+          user: new mongoose.Types.ObjectId(sellerId), // seller ke orders
+          orderStatus: "delivered"
+        }
+      },
+      { $unwind: "$products" }, // agar margin per product calculate karna ho
+      {
+        $group: {
+          _id: null,
+          totalMargin: { $sum: "$marginPrice" }, // sab orders ke margin ka sum
+          totalOrders: { $sum: 1 },              // total delivered orders
+          averageMargin: { $avg: "$marginPrice" }
+        }
+      }
+    ]);
+
+    if (!marginData.length) {
+      return res.status(200).json({
+        message: "Margin data fetched successfully",
+        data: { totalMargin: 0, totalOrders: 0, averageMargin: 0 }
+      });
+    }
+
+    return res.status(200).json({
+      message: "Margin data fetched successfully",
+      data: marginData[0]
+    });
+
+  } catch (error) {
+    return res.status(500).json({ message: 'Something went wrong', error: error.message });
+  }
+  }
+
+  async totalSalesForAdmin (req,res) {
+    try {
+      let totalSales = await BuyNowForMeModel.aggregate([
+        {
+          $match: {
+            orderStatus: "delivered"
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: "$total" }
+          }
+        }
+        
+      ])
+      return res.status(200).json({ message: 'Total sales fetched successfully', totalSales });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+
+  async totalSalesForVendor (req,res) {
+    try {
+      let totalSales = await BuyNowForMeModel.aggregate([
+        {
+          $match: {
+            user: req.user._id,
+            orderStatus: "delivered"
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: "$total" }
+          }
+        }
+      ])
+      return res.status(200).json({ message: 'Total sales fetched successfully', totalSales });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+  async getmonthlyGraphAdmin (req,res) {
+    try {
+      let totalSales = await BuyNowForMeModel.aggregate([
+        {
+          $match: {
+            orderStatus: "delivered"
+          }
+        },
+        {
+          $group: {
+            _id: { $month: "$createdAt" },
+            total: { $sum: "$total" }
+          }
+        }
+      ])
+      return res.status(200).json({ message: 'Total sales fetched successfully', totalSales });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+
 }
+
+
 
 module.exports = new BuyNowForMeController();

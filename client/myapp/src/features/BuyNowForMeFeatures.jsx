@@ -124,6 +124,45 @@ export const rejectOrder = createAsyncThunk(
     }
 )
 
+export const totalSalesAdmin = createAsyncThunk(
+    'orders/totalSalesAdmin',
+    async (_,{rejectWithValue}) => {
+        try {
+            let res = await axios.get(`${baseUrl}/total-sales-for-admin`,{
+                headers: {
+                    'Content-Type': 'application/json',
+                    apikey: import.meta.env.VITE_API_KEY,
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                },
+                withCredentials: true
+            })
+            return res.data; // Assuming the response contains the list of orders
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+            return rejectWithValue(error.response.data.message || 'Failed to fetch orders');
+        }
+    }
+)
+export const adminMonthlyGraph = createAsyncThunk(
+    'orders/adminMonthlyGraph',
+    async (_,{rejectWithValue}) => {
+           try {
+           let res = await axios.get(`${baseUrl}/get-monthly-graph-admin`,{
+               headers: {
+                   'Content-Type': 'application/json',
+                   apikey: import.meta.env.VITE_API_KEY,
+                   Authorization: `Bearer ${localStorage.getItem('token')}`
+               },
+               withCredentials: true
+           })
+           return res.data;
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+            return rejectWithValue(error.response.data.message || 'Failed to fetch orders');
+}
+    
+ }
+)
 
 
 let BuyNowForMeSlice = createSlice({
@@ -131,7 +170,8 @@ let BuyNowForMeSlice = createSlice({
     initialState: {
         order: [],
         loading: false,
-        error: null
+        error: null,
+        total : null,
     },
 
     extraReducers: (builder) => {
@@ -205,6 +245,30 @@ let BuyNowForMeSlice = createSlice({
                 state.order = action.payload;
             })
             .addCase(createOrderForSomeone.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(totalSalesAdmin.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(totalSalesAdmin.fulfilled, (state, action) => {
+                state.loading = false;
+                state.total = action.payload;
+            })
+            .addCase(totalSalesAdmin.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(adminMonthlyGraph.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(adminMonthlyGraph.fulfilled, (state, action) => {
+                state.loading = false;
+                state.total = action.payload;
+            })
+            .addCase(adminMonthlyGraph.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

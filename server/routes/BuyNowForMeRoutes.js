@@ -8,6 +8,7 @@ const isBlocked = require('../middlewares/IsBlocked');
 const BuyNowFormeValidator = require('../validators/BuyNowForMeValidator');
 const validateRequest = require('../middlewares/ValidateRequest');
 const isAdminOrVendor = require('../middlewares/IsAdminOrVendor');
+let isAdmin = require('../middlewares/IsAdmin');
 
 // ================= CREATE ORDER FOR SELF =================
 BuyNowForMeRoutes.post(
@@ -66,5 +67,9 @@ BuyNowForMeRoutes.delete(
   isBlocked,
   BuyNowForMeController.deleteOrder
 );
+BuyNowForMeRoutes.get('/get-seller-margin',apiKeyMiddleware,verifyToken,isBlocked,BuyNowForMeController.getSellerMarginData);
+BuyNowForMeRoutes.get('/total-sales-for-admin',apiKeyMiddleware,verifyToken,isBlocked,isAdmin,BuyNowForMeController.totalSalesForAdmin);
+BuyNowForMeRoutes.get('/total-sales-for-vendor',apiKeyMiddleware,verifyToken,isBlocked,isAdminOrVendor,BuyNowForMeController.totalSalesForVendor);
+BuyNowForMeRoutes.get('/get-monthly-graph-admin',apiKeyMiddleware,verifyToken,isBlocked,isAdmin,BuyNowForMeController.getmonthlyGraphAdmin);
 
 module.exports = BuyNowForMeRoutes;

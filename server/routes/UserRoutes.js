@@ -16,6 +16,9 @@ UserRoutes.patch('/block/:id',ApiKeyMiddleware,verifyToken,IsAdmin, UserControll
 UserRoutes.patch('/unblock/:id',ApiKeyMiddleware,verifyToken,IsAdmin, UserController.unblockUser);
 UserRoutes.get('/blocked-users',ApiKeyMiddleware,verifyToken,IsAdmin, UserController.getBlockedUsers);
 UserRoutes.get('/search-user',ApiKeyMiddleware,verifyToken, IsAdmin,UserController.searchUsers);
+UserRoutes.get('/all-user-count',ApiKeyMiddleware,verifyToken, IsAdmin,UserController.allUsersCount);
+UserRoutes.get('/sellers-count',ApiKeyMiddleware,verifyToken, IsAdmin,UserController.SellersCount);
+UserRoutes.get('/vendors-count',ApiKeyMiddleware,verifyToken, IsAdmin,UserController.vendorsCount);
 UserRoutes.get('/auth/me',ApiKeyMiddleware,verifyToken , (req,res) => {
     res.json({user : req.user})
 } )

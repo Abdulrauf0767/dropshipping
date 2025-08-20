@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const GenerateToken = require('../utils/GenerateToken');
 
 class UserController {
-    static async register(req, res) {
+     async register(req, res) {
         try {
             let { name, email, password } = req.body;
 
@@ -52,7 +52,7 @@ class UserController {
         }
     }
 
-    static async login(req, res) {
+     async login(req, res) {
         try {
             let { email, password } = req.body;
 
@@ -97,7 +97,7 @@ class UserController {
         }
     }
 
-    static async logout(req, res) {
+     async logout(req, res) {
         try {
             res.clearCookie('token');
             return res.status(200).json({ message: 'User logged out successfully' });
@@ -107,7 +107,7 @@ class UserController {
         }
     }
 
-    static async allUsers(req, res) {
+     async allUsers(req, res) {
         try {
             const users = await UserModel.find();
             return res.status(200).json({ users, message: 'Users fetched successfully' });
@@ -118,7 +118,7 @@ class UserController {
     }
 
 
-    static async blockUser(req, res) {
+     async blockUser(req, res) {
     try {
       const userId = req.params.id;
       const user = await UserModel.findById(userId);
@@ -143,7 +143,7 @@ class UserController {
   }
 
   // Unblock a user
-  static async unblockUser(req, res) {
+   async unblockUser(req, res) {
     try {
       const userId = req.params.id;
       const user = await UserModel.findById(userId);
@@ -168,7 +168,7 @@ class UserController {
   }
 
   // Get all blocked users
-  static async getBlockedUsers(req, res) {
+   async getBlockedUsers(req, res) {
     try {
       const blockedUsers = await UserModel.find({ isBlocked: true });
       return res.status(200).json({ users: blockedUsers });
@@ -178,7 +178,7 @@ class UserController {
     }
   }
 
-static async searchUsers(req, res) {
+ async searchUsers(req, res) {
         try {
             const query = req.query.query?.trim();
 
@@ -206,7 +206,37 @@ static async searchUsers(req, res) {
             return res.status(500).json({ message: "Something went wrong", error: error.message });
         }
     }
+
+    async allUsersCount (req,res) {
+        try {
+            let total = await UserModel.countDocuments();
+            return res.status(200).json({ message: 'Users fetched successfully', total });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Something went wrong" });
+        }
+    }
+
+    async SellersCount (req,res) {
+        try {
+            let total = await UserModel.countDocuments({ role: "seller" });
+            return res.status(200).json({ message: 'Users fetched successfully', total });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Something went wrong" });
+        }
+    }
+
+    async vendorsCount (req,res) {
+        try {
+            let total = await UserModel.countDocuments({ role: "vendor" });
+            return res.status(200).json({ message: 'Users fetched successfully', total });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Something went wrong" });
+        }
+    }
 }
 
 
-module.exports = UserController;
+module.exports = new UserController();

@@ -133,6 +133,44 @@ export const rejectOrder = createAsyncThunk(
   }
 );
 
+export const totalSAlesAdmin = createAsyncThunk(
+  'orders/totalSalesAdmin',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(`${BaseURL}/total-sales-for-admin`, {
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: import.meta.env.VITE_API_KEY,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        withCredentials: true,
+      });
+      return res.data; // Assuming the response contains the list of orders
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      return rejectWithValue(error?.response?.data?.message || 'Failed to fetch orders');
+    }
+  }
+)
+export const getMonthlyGraphAdmin = createAsyncThunk(
+  'orders/getMonthlyGraphAdmin',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(`${BaseURL}/get-monthly-graph-admin`, {
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: import.meta.env.VITE_API_KEY,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        withCredentials: true,
+      });
+      return res.data; // Assuming the response contains the list of orders
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      return rejectWithValue(error?.response?.data?.message || 'Failed to fetch orders');
+    }
+  }
+)
 const replaceOrderInArray = (arr, updated) =>
   Array.isArray(arr) ? arr.map((o) => (o?._id === updated?._id ? updated : o)) : arr;
 
@@ -249,6 +287,30 @@ export const proceedToCheckoutSlice = createSlice({
         }
       })
       .addCase(rejectOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(totalSAlesAdmin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(totalSAlesAdmin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.totalSales = action.payload;
+      })
+      .addCase(totalSAlesAdmin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getMonthlyGraphAdmin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getMonthlyGraphAdmin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.monthlyGraph = action.payload;
+      })
+      .addCase(getMonthlyGraphAdmin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
