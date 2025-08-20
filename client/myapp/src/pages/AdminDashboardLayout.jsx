@@ -10,6 +10,7 @@ import {
   FiCheck,
 } from "react-icons/fi";
 import {
+  AddBox,
   BlockOutlined,
   FaceRetouchingOffOutlined,
   KeyboardArrowDownOutlined,
@@ -41,6 +42,7 @@ const AdminDashboardLayout = () => {
     { icon: FaceRetouchingOffOutlined, text: " Rejected Vendors", link: "/admin/rejected-vendors" },
     { icon: LocalOffer, text: " All Orders", link: "/admin/all-orders" },
     { icon: LocalOffer, text: " Your Orders", link: "/admin/your-orders" },
+    { icon: AddBox, text: " Book Orders", link: "/admin/book-orders" },
   ];
 
   const productSubmenu = [

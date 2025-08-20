@@ -8,6 +8,7 @@ import notificationSlice from '../features/NotificationFeature';
 import sellerSlice from '../features/SellerFeature';
 import VendorSlice from '../features/VendorFeatures';
 import ProceedTockeckout from '../features/ProceedTocheckoutFeature';
+import digiDokan from '../features/DigiDokanFeatures';
  const Store = configureStore({
     reducer: {
         user: UserSlice,
@@ -18,7 +19,8 @@ import ProceedTockeckout from '../features/ProceedTocheckoutFeature';
         notification : notificationSlice,
         seller : sellerSlice,
         vendor : VendorSlice,
-        proceed : ProceedTockeckout
+        proceed : ProceedTockeckout,
+        digi  : digiDokan
     }
 })
 

@@ -49,6 +49,10 @@ const ProfileRoutes = require('./routes/ProfileRoutes');
 const SellerRoutes = require('./routes/SellerRoutes');
 const vendorRoutes = require('./routes/VendorRoutes');
 const ProceedToCheckoutRoutes = require('./routes/ProceedToCheckoutRoutes');
+const DigiRoutes = require('./routes/DigiRoutes');
+
+
+
 
 app.use('/api/user', UserRoutes);
 app.use('/api/product', ProductRoutes);
@@ -60,6 +64,7 @@ app.use('/api/profile', ProfileRoutes);
 app.use('/api/seller', SellerRoutes);
 app.use('/api/vendor', vendorRoutes);
 app.use('/api/proceedtocheckout', ProceedToCheckoutRoutes);
+app.use('/api/digi',DigiRoutes);
 
 // ✅ MongoDB Connection + Start Server
 mongoose

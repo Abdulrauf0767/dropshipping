@@ -123,6 +123,11 @@ const Header = () => {
             <ul className="flex flex-col items-start py-2">
               <Link to={'/home/userprofile'}><li className="px-4 py-2 hover:bg-gray-100 w-full cursor-pointer">Profile</li></Link>
               <Link to={'/home/userorder'}><li className="px-4 py-2 hover:bg-gray-100 w-full cursor-pointer">Orders</li></Link>
+              {user?.role === 'seller' &&
+              <Link to={'/home/earning'} >
+              <li className="px-4 py-2 hover:bg-gray-100 w-full cursor-pointer">Earning</li>
+              </Link>
+               }
               <li onClick={handleLogout} className="px-4 py-2 hover:bg-gray-100 text-red-600 w-full cursor-pointer">Logout</li>
             </ul>
           </div>

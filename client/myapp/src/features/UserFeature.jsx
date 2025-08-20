@@ -1,48 +1,48 @@
+// UserSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export const signUp = createAsyncThunk('/signup', async (data) => {
     const res = await axios.post('http://localhost:5001/api/user/register', data, {
-        headers: { // ✅ lowercase
+        headers: {
             'Content-Type': 'application/json',
             "apikey": import.meta.env.VITE_API_KEY
         },
         withCredentials: true
     });
-    localStorage.setItem('token', res.data.token); // ✅ return se pehle
+    localStorage.setItem('token', res.data.token);
     return res.data;
 });
 
 export const login = createAsyncThunk('/login', async (data) => {
     const res = await axios.post('http://localhost:5001/api/user/login', data, {
-        headers: { // ✅ lowercase
+        headers: {
             'Content-Type': 'application/json',
             "apikey": import.meta.env.VITE_API_KEY
         },
         withCredentials: true
     });
 
-    // ✅ Token ko as string save karo, JSON.parse mat karo
     localStorage.setItem('token', res.data.token);
     return res.data;
 });
 
 export const logout = createAsyncThunk('/logout', async () => {
     const res = await axios.get('http://localhost:5001/api/user/logout', {
-        headers: { // ✅ lowercase
+        headers: {
             'Content-Type': 'application/json',
-             "apikey": import.meta.env.VITE_API_KEY,
+            "apikey": import.meta.env.VITE_API_KEY,
             Authorization: `Bearer ${localStorage.getItem('token')}`
         },
         withCredentials: true
     });
-    localStorage.removeItem('token'); // ✅ token clear on logout
+    localStorage.removeItem('token');
     return res.data;
 });
 
 export const userGetRole = createAsyncThunk('/user/role', async () => {
     const res = await axios.get('http://localhost:5001/api/user/auth/me', {
-        headers: { // ✅ lowercase
+        headers: {
             'Content-Type': 'application/json',
             "apikey": import.meta.env.VITE_API_KEY,
             Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -54,7 +54,7 @@ export const userGetRole = createAsyncThunk('/user/role', async () => {
 
 export const updateProfile = createAsyncThunk('/user/update', async (data) => {
     const res = await axios.patch('http://localhost:5001/api/profile/update', data, {
-        headers: { // ✅ lowercase
+        headers: {
             'Content-Type': 'multipart/form-data',
             "apikey": import.meta.env.VITE_API_KEY,
             Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -66,7 +66,7 @@ export const updateProfile = createAsyncThunk('/user/update', async (data) => {
 
 export const getUserProfile = createAsyncThunk('/user/profile', async () => {
     const res = await axios.get('http://localhost:5001/api/profile/get', {
-        headers: { // ✅ lowercase
+        headers: {
             'Content-Type': 'application/json',
             "apikey": import.meta.env.VITE_API_KEY,
             Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -157,7 +157,7 @@ export const searchUsers = createAsyncThunk(
   async (query, { rejectWithValue }) => {
     try {
       const res = await axios.get(`http://localhost:5001/api/user/search-user`, {
-        params: { query }, // ✅ query parameter ke through bhejna
+        params: { query },
         headers: {
           "Content-Type": "application/json",
           "apikey": import.meta.env.VITE_API_KEY,
@@ -229,15 +229,55 @@ export const vendorsCount = createAsyncThunk(
     }
 )
 
+export const proceedSellerSearning = createAsyncThunk(
+    'users/user searning',
+    async (_,{rejectWithValue}) => {
+        try {
+            let res = await axios.get('http://localhost:5001/api/proceedtocheckout/get-seller-margin',{
+                headers : {
+                    "Content-Type" : "application/json",
+                    "apikey" : import.meta.env.VITE_API_KEY,
+                    Authorization : `Bearer ${localStorage.getItem('token')}`
+                },
+                withCredentials : true
+            })
+            return res.data.data; // Return the data object directly
+        } catch (error) {
+            return rejectWithValue(error.response.data)
+        }
+    }
+)
+
+export const buyNowSellerearning = createAsyncThunk(
+    'users/seller searning',
+    async (_,{rejectWithValue}) => {
+        try {
+            let res = await axios.get('http://localhost:5001/api/buynowforme/get-seller-margin',{
+                headers : {
+                    "Content-Type" : "application/json",
+                    "apikey" : import.meta.env.VITE_API_KEY,
+                    Authorization : `Bearer ${localStorage.getItem('token')}`
+                },
+                withCredentials : true
+            })
+            return res.data.data; // Return the data object directly
+        } catch (error) {
+            return rejectWithValue(error.response.data)
+        }
+    }
+)
+
 const UserSlice = createSlice({
     name: 'user',
     initialState: {
         status: 'idle',
         user: null,
         error: '',
-        profile : [],
-        alluser :[],
-        total : null,
+        profile: [],
+        alluser: [],
+        total: null,
+        proceedSellerEarningResp: { totalMargin: 0, totalOrders: 0, averageMargin: 0 },
+        buyNowSellerEarningResp: { totalMargin: 0, totalOrders: 0, averageMargin: 0 }
     },
 
     extraReducers: (builder) => {
@@ -346,7 +386,7 @@ const UserSlice = createSlice({
             })
             .addCase(unBlockUser.fulfilled,(state,action) => {
                 state.status = 'succeeded';
-                   state.alluser = state.alluser.map(user => 
+                state.alluser = state.alluser.map(user => 
                     user._id === action.payload._id ? action.payload : user
                 );
             })
@@ -359,7 +399,7 @@ const UserSlice = createSlice({
             })
             .addCase(blockUser.fulfilled,(state,action) => {
                 state.status = 'succeeded';
-                  state.alluser = state.alluser.map(user => 
+                state.alluser = state.alluser.map(user => 
                     user._id === action.payload._id ? action.payload : user
                 );
             })
@@ -397,6 +437,30 @@ const UserSlice = createSlice({
                 state.total = action.payload.total;
             })
             .addCase(vendorsCount.rejected,(state,action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(proceedSellerSearning.pending,(state,action) => {
+                state.status = 'loading';
+            })
+            .addCase(proceedSellerSearning.fulfilled,(state,action) => {
+                state.status = 'succeeded';
+                // Fix: Store the entire data object, not action.payload.total
+                state.proceedSellerEarningResp = action.payload;
+            })
+            .addCase(proceedSellerSearning.rejected,(state,action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(buyNowSellerearning.pending,(state,action) => {
+                state.status = 'loading';
+            })
+            .addCase(buyNowSellerearning.fulfilled,(state,action) => {
+                state.status = 'succeeded';
+                // Fix: Store the entire data object, not action.payload.total
+                state.buyNowSellerEarningResp = action.payload;
+            })
+            .addCase(buyNowSellerearning.rejected,(state,action) => {
                 state.status = 'failed';
                 state.error = action.error.message;
             })

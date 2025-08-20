@@ -37,6 +37,10 @@ const AdminProducts = lazy(() => import('./pages/AdminProducts'));
 const AdminItselfProducts = lazy(() => import('./pages/AdminItselfProducts'));
 const AdminOrders = lazy(() => import('./pages/AdminOrders'));
 const AdminYourOrders = lazy(() => import('./pages/AdminYourOrders'));
+const DigiDokanLogin = lazy(() => import('./pages/DigiDokanLogin'));
+const UserEarning = lazy(() => import('./pages/UserEarning'));
+const Contact = lazy(() => import('./components/Contact'));
+const About = lazy(() => import('./components/About'));
 
 
 const App = () => {
@@ -72,6 +76,9 @@ const App = () => {
             <Route path="becomevendor" element={<BecomeVendor />} />
             <Route path="proceed-to-me/:id" element={<ProceedtoMe />} />
             <Route path="proceed-to-someone/:id" element={<ProceedToSomeone />} />
+            <Route path="earning" element={<UserEarning />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="about" element={<About />} />
           </Route>
 
           {/* Vendor Protected Route */}
@@ -96,6 +103,7 @@ const App = () => {
               <Route path="itself-products" element={<AdminItselfProducts />} />
               <Route path="all-orders" element={<AdminOrders />} />
               <Route path="your-orders" element={<AdminYourOrders />} />
+              <Route path="book-orders" element={<DigiDokanLogin />} />
             </Route>
           </Route>
         </Routes>
