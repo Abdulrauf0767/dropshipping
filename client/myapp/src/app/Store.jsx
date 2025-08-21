@@ -9,6 +9,10 @@ import sellerSlice from '../features/SellerFeature';
 import VendorSlice from '../features/VendorFeatures';
 import ProceedTockeckout from '../features/ProceedTocheckoutFeature';
 import digiDokan from '../features/DigiDokanFeatures';
+import contactSlice from '../features/ContactFeatures'
+
+
+
  const Store = configureStore({
     reducer: {
         user: UserSlice,
@@ -20,7 +24,8 @@ import digiDokan from '../features/DigiDokanFeatures';
         seller : sellerSlice,
         vendor : VendorSlice,
         proceed : ProceedTockeckout,
-        digi  : digiDokan
+        digi  : digiDokan,
+        contact : contactSlice
     }
 })
 

@@ -41,6 +41,7 @@ const DigiDokanLogin = lazy(() => import('./pages/DigiDokanLogin'));
 const UserEarning = lazy(() => import('./pages/UserEarning'));
 const Contact = lazy(() => import('./components/Contact'));
 const About = lazy(() => import('./components/About'));
+const AdminMessages = lazy(() => import('./components/AdminMessages'));
 
 
 const App = () => {
@@ -104,6 +105,7 @@ const App = () => {
               <Route path="all-orders" element={<AdminOrders />} />
               <Route path="your-orders" element={<AdminYourOrders />} />
               <Route path="book-orders" element={<DigiDokanLogin />} />
+              <Route path="contact" element={<AdminMessages />} />
             </Route>
           </Route>
         </Routes>

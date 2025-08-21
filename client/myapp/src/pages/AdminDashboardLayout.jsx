@@ -17,6 +17,7 @@ import {
   KeyboardArrowUpOutlined,
   LocalOffer,
   LogoutOutlined,
+  MessageOutlined,
   PendingOutlined,
   StorefrontOutlined,
 } from "@mui/icons-material";
@@ -43,6 +44,7 @@ const AdminDashboardLayout = () => {
     { icon: LocalOffer, text: " All Orders", link: "/admin/all-orders" },
     { icon: LocalOffer, text: " Your Orders", link: "/admin/your-orders" },
     { icon: AddBox, text: " Book Orders", link: "/admin/book-orders" },
+    { icon: MessageOutlined, text: " Messages", link: "/admin/contact" },
   ];
 
   const productSubmenu = [
