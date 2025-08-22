@@ -229,24 +229,7 @@ export const vendorsCount = createAsyncThunk(
     }
 )
 
-export const proceedSellerSearning = createAsyncThunk(
-    'users/user searning',
-    async (_,{rejectWithValue}) => {
-        try {
-            let res = await axios.get('http://localhost:5001/api/proceedtocheckout/get-seller-margin',{
-                headers : {
-                    "Content-Type" : "application/json",
-                    "apikey" : import.meta.env.VITE_API_KEY,
-                    Authorization : `Bearer ${localStorage.getItem('token')}`
-                },
-                withCredentials : true
-            })
-            return res.data.data; // Return the data object directly
-        } catch (error) {
-            return rejectWithValue(error.response.data)
-        }
-    }
-)
+
 
 export const buyNowSellerearning = createAsyncThunk(
     'users/seller searning',
@@ -276,7 +259,6 @@ const UserSlice = createSlice({
         profile: [],
         alluser: [],
         total: null,
-        proceedSellerEarningResp: { totalMargin: 0, totalOrders: 0, averageMargin: 0 },
         buyNowSellerEarningResp: { totalMargin: 0, totalOrders: 0, averageMargin: 0 }
     },
 
@@ -437,18 +419,6 @@ const UserSlice = createSlice({
                 state.total = action.payload.total;
             })
             .addCase(vendorsCount.rejected,(state,action) => {
-                state.status = 'failed';
-                state.error = action.error.message;
-            })
-            .addCase(proceedSellerSearning.pending,(state,action) => {
-                state.status = 'loading';
-            })
-            .addCase(proceedSellerSearning.fulfilled,(state,action) => {
-                state.status = 'succeeded';
-                // Fix: Store the entire data object, not action.payload.total
-                state.proceedSellerEarningResp = action.payload;
-            })
-            .addCase(proceedSellerSearning.rejected,(state,action) => {
                 state.status = 'failed';
                 state.error = action.error.message;
             })

@@ -10,6 +10,7 @@ import {
   FiCheck,
 } from "react-icons/fi";
 import {
+  AccountBalance,
   AddBox,
   BlockOutlined,
   FaceRetouchingOffOutlined,
@@ -20,6 +21,7 @@ import {
   MessageOutlined,
   PendingOutlined,
   StorefrontOutlined,
+  Wallet,
 } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import { logout } from "../features/UserFeature";
@@ -45,6 +47,7 @@ const AdminDashboardLayout = () => {
     { icon: LocalOffer, text: " Your Orders", link: "/admin/your-orders" },
     { icon: AddBox, text: " Book Orders", link: "/admin/book-orders" },
     { icon: MessageOutlined, text: " Messages", link: "/admin/contact" },
+    { icon: AccountBalance, text: " Withdraw", link: "/admin/withdraw-management" },
   ];
 
   const productSubmenu = [

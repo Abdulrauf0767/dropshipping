@@ -4,6 +4,8 @@ const ProductModel = require('../models/Product.Model');
 const NotificationModel = require('../models/Notification.Model');
 const mongoose = require('mongoose');
 const BuyNowForMeModel = require('../models/BuyNowForMe.Model');
+const ProceedTocheckoutModel = require('../models/ProceedTocheckout.Model');
+const WithdrawModel = require('../models/WithDraw.Model');
 
 class BuyNowForMeController {
 
@@ -230,44 +232,77 @@ class BuyNowForMeController {
     }
   }
 
- async getSellerMarginData(req, res) {
-     try {
-    const sellerId = req.user._id;
+// ✅ Combined Seller Margin (BuyNowForMe + ProceedToCheckout)
+async getSellerMarginData(req, res) {
+  try {
+    const sellerId = req.params.sellerId || req.user._id;
 
-    const marginData = await BuyNowForMeModel.aggregate([
-      {
-        $match: {
-          user: new mongoose.Types.ObjectId(sellerId), // seller ke orders
-          orderStatus: "delivered"
-        }
-      },
-      { $unwind: "$products" }, // agar margin per product calculate karna ho
+    // 1) BuyNowForMe aggregation
+    const buyNowMargin = await BuyNowForMeModel.aggregate([
+      { $match: { user: new mongoose.Types.ObjectId(sellerId), orderStatus: "delivered" } },
+      { $unwind: "$products" },
       {
         $group: {
           _id: null,
-          totalMargin: { $sum: "$marginPrice" }, // sab orders ke margin ka sum
-          totalOrders: { $sum: 1 },              // total delivered orders
-          averageMargin: { $avg: "$marginPrice" }
-        }
-      }
+          totalMargin: { $sum: "$marginPrice" },
+          totalOrders: { $sum: 1 },
+          averageMargin: { $avg: "$marginPrice" },
+        },
+      },
     ]);
 
-    if (!marginData.length) {
-      return res.status(200).json({
-        message: "Margin data fetched successfully",
-        data: { totalMargin: 0, totalOrders: 0, averageMargin: 0 }
-      });
-    }
+    // 2) ProceedToCheckout aggregation
+    const proceedMargin = await ProceedTocheckoutModel.aggregate([
+      { $match: { user: new mongoose.Types.ObjectId(sellerId), orderStatus: "delivered" } },
+      { $unwind: "$products" },
+      {
+        $group: {
+          _id: null,
+          totalMargin: { $sum: "$marginPrice" },
+          totalOrders: { $sum: 1 },
+          averageMargin: { $avg: "$marginPrice" },
+        },
+      },
+    ]);
 
-    return res.status(200).json({
+    // Defaults
+    const buyNowData = buyNowMargin[0] || { totalMargin: 0, totalOrders: 0, averageMargin: 0 };
+    const proceedData = proceedMargin[0] || { totalMargin: 0, totalOrders: 0, averageMargin: 0 };
+
+    // 3) Approved Withdrawals sum karo
+    const approvedWithdrawals = await WithdrawModel.aggregate([
+      { $match: { user: new mongoose.Types.ObjectId(sellerId), status: "approved" } },
+      { $group: { _id: null, totalWithdrawn: { $sum: "$amount" } } },
+    ]);
+    const totalWithdrawn = approvedWithdrawals[0]?.totalWithdrawn || 0;
+
+    // 4) Combined data minus withdrawals
+    const combinedTotalMargin = buyNowData.totalMargin + proceedData.totalMargin - totalWithdrawn;
+    const combinedTotalOrders = buyNowData.totalOrders + proceedData.totalOrders;
+
+    const combinedData = {
+      totalMargin: combinedTotalMargin >= 0 ? combinedTotalMargin : 0,
+      totalOrders: combinedTotalOrders,
+      averageMargin:
+        combinedTotalOrders > 0 ? combinedTotalMargin / combinedTotalOrders : 0,
+      breakdown: {
+        buyNow: buyNowData,
+        proceed: proceedData,
+      },
+      totalWithdrawn,
+    };
+
+    res.status(200).json({
       message: "Margin data fetched successfully",
-      data: marginData[0]
+      data: combinedData,
     });
 
   } catch (error) {
-    return res.status(500).json({ message: 'Something went wrong', error: error.message });
+    console.error("Get seller margin error:", error);
+    res.status(500).json({ message: "Something went wrong", error: error.message });
   }
-  }
+}
+
 
   async totalSalesForAdmin (req,res) {
     try {

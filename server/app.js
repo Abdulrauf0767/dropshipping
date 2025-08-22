@@ -51,6 +51,7 @@ const vendorRoutes = require('./routes/VendorRoutes');
 const ProceedToCheckoutRoutes = require('./routes/ProceedToCheckoutRoutes');
 const DigiRoutes = require('./routes/DigiRoutes');
 const ContactRoutes = require('./routes/ContactRoutes');
+const WithdrawRoutes = require('./routes/WithdrawRoutes');
 
 
 
@@ -67,6 +68,7 @@ app.use('/api/vendor', vendorRoutes);
 app.use('/api/proceedtocheckout', ProceedToCheckoutRoutes);
 app.use('/api/digi',DigiRoutes);
 app.use('/api/contact',ContactRoutes)
+app.use('/api/withdraw',WithdrawRoutes)
 
 // ✅ MongoDB Connection + Start Server
 mongoose

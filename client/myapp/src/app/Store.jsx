@@ -10,6 +10,7 @@ import VendorSlice from '../features/VendorFeatures';
 import ProceedTockeckout from '../features/ProceedTocheckoutFeature';
 import digiDokan from '../features/DigiDokanFeatures';
 import contactSlice from '../features/ContactFeatures'
+import withdrawSlice from '../features/WithdrawFeatures'
 
 
 
@@ -25,7 +26,8 @@ import contactSlice from '../features/ContactFeatures'
         vendor : VendorSlice,
         proceed : ProceedTockeckout,
         digi  : digiDokan,
-        contact : contactSlice
+        contact : contactSlice,
+        withdraw : withdrawSlice
     }
 })
 

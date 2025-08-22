@@ -165,45 +165,7 @@ class ProceedTocheckoutController {
         }
     }
 
-    async getSellerMargin (req,res) {
-         try {
-    let sellerId = req.user._id;
 
-    const margin = await ProceedTocheckoutModel.aggregate([
-      {
-        $match: {
-          user: new mongoose.Types.ObjectId(sellerId), // ObjectId ke saath match
-          orderStatus: "delivered"
-        }
-      },
-      { $unwind: "$products" }, // products array ko flatten karna (agar per-product margin consider karna ho)
-      {
-        $group: {
-          _id: null,
-          totalMargin: { $sum: "$marginPrice" }, // sab orders ka margin sum
-          totalOrders: { $sum: 1 },              // total delivered orders
-          averageMargin: { $avg: "$marginPrice" }
-        }
-      }
-    ]);
-
-    if (!margin.length) {
-      return res.status(200).json({
-        message: "Margin data fetched successfully",
-        data: { totalMargin: 0, totalOrders: 0, averageMargin: 0 }
-      });
-    }
-
-    return res.status(200).json({
-      message: "Margin data fetched successfully",
-      data: margin[0]
-    });
-
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Something went wrong", error: error.message });
-  }
-    }
 
     async TotalSalesForAdmin (req,res) {
       try {

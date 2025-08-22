@@ -42,6 +42,8 @@ const UserEarning = lazy(() => import('./pages/UserEarning'));
 const Contact = lazy(() => import('./components/Contact'));
 const About = lazy(() => import('./components/About'));
 const AdminMessages = lazy(() => import('./components/AdminMessages'));
+const Withdraw = lazy(() => import('./components/Withdraw'));
+const AdminWithdraw = lazy(() => import('./pages/AdminWithdraw'));
 
 
 const App = () => {
@@ -80,6 +82,7 @@ const App = () => {
             <Route path="earning" element={<UserEarning />} />
             <Route path="contact" element={<Contact />} />
             <Route path="about" element={<About />} />
+            <Route path="withdraw" element={<Withdraw />} />
           </Route>
 
           {/* Vendor Protected Route */}
@@ -106,6 +109,7 @@ const App = () => {
               <Route path="your-orders" element={<AdminYourOrders />} />
               <Route path="book-orders" element={<DigiDokanLogin />} />
               <Route path="contact" element={<AdminMessages />} />
+              <Route path="withdraw-management" element={<AdminWithdraw />} />
             </Route>
           </Route>
         </Routes>

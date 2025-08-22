@@ -1,33 +1,33 @@
 // UserEarning.jsx
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect } from 'react'
 import Header from '../components/Header'
 import { Container, Paper } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
-import { buyNowSellerearning, proceedSellerSearning } from '../features/UserFeature'
+import { buyNowSellerearning } from '../features/UserFeature'
+import { useNavigate } from 'react-router-dom'
 
 const UserEarning = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    // Dono APIs fire karo
-    dispatch(proceedSellerSearning())
     dispatch(buyNowSellerearning())
   }, [dispatch])
 
-  // --- Selectors (slice me already "data" object aa raha hai)
-  const proceed = useSelector((state) => state.user?.proceedSellerEarningResp) || { totalMargin: 0, totalOrders: 0, averageMargin: 0 }
-  const buyNow  = useSelector((state) => state.user?.buyNowSellerEarningResp)  || { totalMargin: 0, totalOrders: 0, averageMargin: 0 }
+  // CORRECTED: Changed selector to match the actual state property name
+  const earningResp = useSelector((state) => state.user?.buyNowSellerEarningResp) || {
+    totalMargin: 0,
+    totalOrders: 0,
+    averageMargin: 0,
+    breakdown: { buyNow: {}, proceed: {} },
+  }
 
-  // Overall summary (weighted average on orders)
-  const overall = useMemo(() => {
-    const totalMargin = Number(proceed.totalMargin || 0) + Number(buyNow.totalMargin || 0)
-    const totalOrders = Number(proceed.totalOrders || 0) + Number(buyNow.totalOrders || 0)
-    const averageMargin = totalOrders > 0 ? Math.round(totalMargin / totalOrders) : 0
-    return { totalMargin, totalOrders, averageMargin }
-  }, [proceed, buyNow])
+  const { totalMargin, totalOrders, averageMargin, breakdown } = earningResp
+  const proceed = breakdown?.proceed || { totalMargin: 0, totalOrders: 0, averageMargin: 0 }
+  const buyNow = breakdown?.buyNow || { totalMargin: 0, totalOrders: 0, averageMargin: 0 }
 
+  const navigate = useNavigate();
   const handleWithdraw = () => {
-    alert(`Withdraw request submitted for PKR ${overall.totalMargin}`)
+    navigate('/home/withdraw')
   }
 
   // Simple badge component
@@ -67,8 +67,8 @@ const UserEarning = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Pill>Total Orders: {overall.totalOrders}</Pill>
-                  <Pill>Avg Margin: PKR {overall.averageMargin}</Pill>
+                  <Pill>Total Orders: {totalOrders}</Pill>
+                  <Pill>Avg Margin: PKR {Math.round(averageMargin)}</Pill>
                 </div>
               </div>
 
@@ -76,15 +76,15 @@ const UserEarning = () => {
               <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="bg-white/10 rounded-lg p-4">
                   <div className="text-sm text-white/80">Total Margin</div>
-                  <div className="text-2xl font-bold mt-1">PKR {overall.totalMargin}</div>
+                  <div className="text-2xl font-bold mt-1">PKR {totalMargin}</div>
                 </div>
                 <div className="bg-white/10 rounded-lg p-4">
                   <div className="text-sm text-white/80">Total Orders</div>
-                  <div className="text-2xl font-bold mt-1">{overall.totalOrders}</div>
+                  <div className="text-2xl font-bold mt-1">{totalOrders}</div>
                 </div>
                 <div className="bg-white/10 rounded-lg p-4">
                   <div className="text-sm text-white/80">Average Margin</div>
-                  <div className="text-2xl font-bold mt-1">PKR {overall.averageMargin}</div>
+                  <div className="text-2xl font-bold mt-1">PKR {Math.round(averageMargin)}</div>
                 </div>
               </div>
             </div>
@@ -115,7 +115,7 @@ const UserEarning = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Average Margin</span>
-                      <span className="font-semibold">PKR {proceed.averageMargin}</span>
+                      <span className="font-semibold">PKR {Math.round(proceed.averageMargin || 0)}</span>
                     </div>
                   </div>
                 </div>
@@ -141,7 +141,7 @@ const UserEarning = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Average Margin</span>
-                      <span className="font-semibold">PKR {buyNow.averageMargin}</span>
+                      <span className="font-semibold">PKR {Math.round(buyNow.averageMargin || 0)}</span>
                     </div>
                   </div>
                 </div>
@@ -150,7 +150,7 @@ const UserEarning = () => {
               {/* Withdraw CTA */}
               <div className="mt-6 flex items-center justify-between gap-3 flex-col sm:flex-row">
                 <div className="text-gray-600 text-sm">
-                  Available to withdraw: <span className="font-semibold text-gray-900">PKR {overall.totalMargin}</span>
+                  Available to withdraw: <span className="font-semibold text-gray-900">PKR {totalMargin}</span>
                 </div>
                 <button
                   onClick={handleWithdraw}
