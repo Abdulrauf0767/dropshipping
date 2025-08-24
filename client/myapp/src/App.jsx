@@ -11,6 +11,7 @@ import ProceedToSomeone from './pages/ProceedToSomeone';
 
 
 
+
 // Lazy-loaded components
 const Login = lazy(() => import('./components/Login'));
 const Signup = lazy(() => import('./components/Signup'));
@@ -44,6 +45,11 @@ const About = lazy(() => import('./components/About'));
 const AdminMessages = lazy(() => import('./components/AdminMessages'));
 const Withdraw = lazy(() => import('./components/Withdraw'));
 const AdminWithdraw = lazy(() => import('./pages/AdminWithdraw'));
+const VendorDashboard = lazy(() => import('./pages/VendorDashboard'));
+
+
+
+
 
 
 const App = () => {
@@ -87,7 +93,9 @@ const App = () => {
 
           {/* Vendor Protected Route */}
           <Route element={<ProtectedRoute allowedRoles={['vendor']} />}>
-            <Route path="/vendor" element={<Vendor />} />
+            <Route path="/vendor" element={<VendorDashboard />}>
+              <Route path="uploadproduct" element={<ProductUpload />} />
+            </Route>
           </Route>
 
           {/* Admin Protected Routes */}
